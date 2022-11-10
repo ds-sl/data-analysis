@@ -16,6 +16,8 @@ output: html_document
 
 # About This Page
 
+## Setup
+
 1. Create a New Project using RStudio
 2. Create an empty repo in GitHub
 3. NEW
@@ -30,3 +32,12 @@ output: html_document
 12. git branch -M main
 13. git push -u origin main
 14. Restart RStudio
+
+## Access from another host
+
+1. On console: library(usethis)
+2. use_git()
+3. create_github_token()
+4. gitcreds::gitcreds_set()
+
+
