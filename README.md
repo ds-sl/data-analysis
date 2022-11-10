@@ -14,15 +14,15 @@ output: html_document
 
 1. Create a New Project using RStudio
 2. Create an empty repo in GitHub
-  1. NEW
-  2. Set the repository name 
-  3. Copied the link from the quick setup
-3. Use Terminal in the buttom left pane
-	1. confirm that the current directry is the home directry of the project by `pwd`
-  2. git init 
-  3. git remote add origin git@github-sub:ds-sl/data-analysis.git
-  4. git add README.md
-  5. git commit -m "first commit"
-  6. git branch -M main
-  7. git push -u origin main
-
+3. NEW
+4. Set the repository name 
+5. Copied the link from the quick setup
+6. Use Terminal in the buttom left pane  
+7. confirm that the current directry is the home directry of the project by `pwd`  
+8. git init 
+9. git remote add origin git@github-sub:ds-sl/data-analysis.git
+10. git add README.md
+11. git commit -m "first commit"
+12. git branch -M main
+13. git push -u origin main
+14. Restart RStudio
