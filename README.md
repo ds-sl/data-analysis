@@ -9,6 +9,10 @@ output: html_document
 
 ## World Inequality Report
 
+### WIR2022
+
+* Executive Summary: https://wir2022.wid.world/executive-summary/
+* Methodology: https://wir2022.wid.world/methodology/
 
 # About This Page
 
