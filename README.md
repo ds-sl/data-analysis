@@ -21,3 +21,8 @@ output: html_document
 	1. confirm that the current directry is the home directry of the project by `pwd`
   2. git init 
   3. git remote add origin git@github-sub:ds-sl/data-analysis.git
+  4. git add README.md
+  5. git commit -m "first commit"
+  6. git branch -M main
+  7. git push -u origin main
+
