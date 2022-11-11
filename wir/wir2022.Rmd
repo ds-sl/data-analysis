@@ -50,12 +50,49 @@ df_f1 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F1")
 df_f1
 ```
 
+```{r}
+df_f1 %>% select(cat = ...1, 2:4) %>%
+  pivot_longer(2:4, names_to = "level", values_to = "value") %>%
+  ggplot(aes(x = cat, y = value, fill = level)) +
+  geom_col(position = "dodge") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 1. Global income and wealth inequality, 2021",
+       x = "", y = "Share of total income or wealth", fill = "")
+```
+**Interpretation**: The global bottom 50% captures 8.5% of total income measured at Purchasing Power Parity (PPP). The global bottom 50% owns 2% of wealth (at Purchasing Power Parity). The global top 10% owns 76% of total Household wealth and captures 52% of total income in 2021. Note that top wealth holders are not necessarily top income holders. Incomes are measured after the operation of pension and unemployment systems and before taxes and transfers.   
+**Sources and series**: wir2022.wid.world/methodology.
+
 
 ### F2: The poorest half lags behind: Bottom 50%, middle 40% and top 10% income shares across the world in 2021
 
 ```{r data-f2, cash = TRUE}
 df_f2 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F2")
 df_f2
+```
+
+```{r}
+df_f2 %>% pivot_longer(3:5, names_to = "level", values_to = "value") %>%
+  ggplot(aes(x = iso, y = value, fill = level)) +
+  geom_col(position = "dodge") + 
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 2. The poorest half lags behind", 
+       subtitle = "Bottom 50%, middle 40% and top 10% income shares across the world in 2021",
+       x = "", y = "Share of national income (%)", fill = "")
+```
+**Interpretation**: In Latin America, the top 10% captures 55% of national income, compared to 36% in Europe. Income is measured after pension and unemployment contributions and benefits paid and received by individuals but before income taxes and other transfers.   
+**Sources and series**: www.wir2022.wid.world/methodology.
+
+
+```{r}
+df_f2 %>% pivot_longer(3:5, names_to = "level", values_to = "value") %>%
+  ggplot(aes(x = iso, y = value, fill = level)) +
+  geom_col(position = "dodge") + 
+  theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 2. The poorest half lags behind", 
+       subtitle = "Bottom 50%, middle 40% and top 10% income shares across the world in 2021",
+       x = "", y = "Share of national income (%)", fill = "")
 ```
 
 ### F3: Top 10/Bottom 50 income gaps across the world, 2021
@@ -72,17 +109,145 @@ df_f4 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F4")
 df_f4
 ```
 
+* Wrap long label: `scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10))`
+* Per Cent: `scale_y_continuous(labels = scales::percent_format(accuracy = 1))`
+
+```{r}
+df_f4 %>% pivot_longer(3:5, names_to = "level", values_to = "value") %>%
+  ggplot(aes(x = iso, y = value, fill = level)) +
+  geom_col(position = "dodge") + 
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 4. The extreme concentration of capital:", 
+       subtitle = "wealth inequality across the world, 2021",
+       x = "", y = "Share of national wealth (%)", fill = "")
+```
+**Interpretation**:  The Top 10% in Latin America captures 77% of total household wealth, versus 22% for the Middle 40% and 1% for the Bottom 50%. In Europe, the Top 10% owns 58% of total wealth, versus 38% for the Middle 40% and 4% for the Bottom 50%.   
+**Sources and series**: wir2022.wid.world/methodology.
+
+
 ### F5: Global income inequality: T10/B50 ratio, 1820-2020
 
 ```{r data-f5, cash = TRUE}
 df_f5 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F5")
 df_f5
 ```
+**Use `span` Argument to Fit to Data**
+
+* y-axis: `lims(y = c(10,70))`
+* `stringr::str_wrap("long text", width = size)`
+* `annotate` with `size = fontsize`
+
+```{r}
+df_f5 %>% select(year = y, ratio = t10b50) %>%
+  ggplot(aes(x = year, y = ratio)) + 
+  lims(y = c(10,70)) + 
+  stat_smooth(span = 0.25, se = FALSE) + 
+  scale_x_continuous(breaks = round(seq(1820, 2020, by = 20),1)) + 
+  labs(title = "Figure 5. Global income inequality:T10/B50 ratio, 1820-2020", 
+       x = "", y = stringr::str_wrap("Ratio of top 10% average income to bottom 50% average income", width = 35)) +
+  annotate("text", x = 1840, y = 32, label = stringr::str_wrap("1820: average income of the global top 10% is 18x higher than average income of the bottom 50%", width = 20), size = 3) + 
+  annotate("text", x = 1910, y = 49, label = stringr::str_wrap("1910: average income of the global top 10% is 41x higher than average income of the bottom 50%", width = 20), size = 3) +
+    annotate("text", x = 1980, y = 60, label = stringr::str_wrap("1980: average income of the global top 10% is 53x higher than average income of the bottom 50%", width = 20), size = 3) +
+    annotate("text", x = 2010, y = 32, label = stringr::str_wrap("2020: average income of the global top 10% is 38x higher than average income of the bottom 50%", width = 20), size = 3)
+```
+**Interpretation**. Global inequality, as measured by the ratio T10/B50 between the average income of the top 10% and the average income of the bottom 50%, more than doubled between between 1820 and 1910, from less than 20 to about 40, and stabilized around 40 between 1910 and 2020. It is too early to say whether the decline in global inequality observed since 2008 will continue. Income is measured per capita after pension and unemployement insurance transfers and before income and wealth taxes.   
+**Sources and series**: wir2022.wid.world/lmethodology and Chancel and Piketty (2021)..
+
+* `ggforce::geom_mark_rect` will add annotation in a box.
+
+**Line Plot and LOESS**
+
+```{r}
+df_f5 %>% select(year = y, ratio = t10b50) %>%
+  ggplot(aes(x = year, y = ratio)) +
+  geom_line() +
+  geom_smooth(method = "loess", se = FALSE) + 
+  labs(title = "Figure 5. Global income inequality:", 
+       subtitle = "T10/B50 ratio, 1820-2020",
+       x = "", y = "Ratio of top 10% average income to bottom 50% average income")
+```
+
+**GAM Smoothing with 24 Points**
+
+```{r}
+df_f5 %>% select(year = y, ratio = t10b50) %>%
+  ggplot(aes(x = year, y = ratio)) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 24), se = FALSE) + 
+  scale_x_continuous(breaks = round(seq(min(df_f5$y), max(df_f5$y), by = 20),1)) + 
+  labs(title = "Figure 5. Global income inequality:T10/B50 ratio, 1820-2020", 
+       x = "", y = stringr::str_wrap("Ratio of top 10% average income to bottom 50% average income", width = 35))
+```
+
+**Polynomial Approximation of Degree 6**
+
+```{r}
+df_f5 %>% select(year = y, ratio = t10b50) %>%
+  ggplot(aes(x = year, y = ratio)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 6), se = FALSE) + 
+  labs(title = "Figure 5. Global income inequality:", 
+       subtitle = "T10/B50 ratio, 1820-2020",
+       x = "", y = "Ratio of top 10% average income to bottom 50% average income")
+```
+
 ### F6: Global income inequality: Between vs. Within country inequality (Theil index), 1820-2020
 
 ```{r data-f6, cash = TRUE}
 df_f6 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F6")
 df_f6
+```
+
+* `rev(scales::hue_pal()(2))`: reversing the order of colors to fill.
+
+```{r}
+df_f6 %>% select(year = "...1", 2:3) %>%
+  pivot_longer(cols = 2:3, names_to = "type", values_to = "value") %>%
+  mutate(types = factor(type, levels = c("Within-country inequality", "Between-country inequality"))) %>%
+  ggplot(aes(x = year, y = value, fill = types)) +
+  geom_area() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = round(seq(1820, 2020, by = 20),1)) + 
+  scale_fill_manual(values=rev(scales::hue_pal()(2)), labels = function(x) str_wrap(x, width = 15)) +
+  labs(title = "Figure 6. Global income inequality:", 
+       subtitle = "Between vs. within country inequality (Theil index), 1820-2020",
+       x = "", y = "Share of global inequality (% of total Theil index)", fill = "") + 
+  annotate("text", x = 1850, y = 0.28, label = stringr::str_wrap("1820: Between country inequality represents 11% of global inequality", width = 20), size = 3) + 
+  annotate("text", x = 1980, y = 0.70, label = stringr::str_wrap("1980: Between country inequality represents 57% of global inequality", width = 20), size = 3) +
+    annotate("text", x = 1990, y = 0.30, label = stringr::str_wrap("2020: Between country inequality represents 32% of global inequality", width = 20), size = 3)
+```
+* Legend can be place at the bottom: `theme(legend.position="bottom")`
+
+```{r}
+df_f6 %>% select(year = "...1", 2:3) %>%
+  pivot_longer(cols = 2:3, names_to = "type", values_to = "value") %>%
+  mutate(types = factor(type, levels = c("Within-country inequality", "Between-country inequality"))) %>%
+  ggplot(aes(x = year, y = value, fill = types)) +
+  geom_area() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = round(seq(1820, 2020, by = 20),1)) + 
+  scale_fill_manual(values=rev(scales::hue_pal()(2))) +
+  labs(title = "Figure 6. Global income inequality:", 
+       subtitle = "Between vs. within country inequality (Theil index), 1820-2020",
+       x = "", y = "Share of global inequality (% of total Theil index)", fill = "") + 
+  annotate("text", x = 1850, y = 0.28, label = stringr::str_wrap("1820: Between country inequality represents 11% of global inequality", width = 20), size = 3) + 
+  annotate("text", x = 1980, y = 0.70, label = stringr::str_wrap("1980: Between country inequality represents 57% of global inequality", width = 20), size = 3) +
+    annotate("text", x = 1990, y = 0.30, label = stringr::str_wrap("2020: Between country inequality represents 32% of global inequality", width = 20), size = 3) +
+  theme(legend.position="bottom")
+```
+**Interpretation**. The importance of between-country inequality in overall global inequality, as measured by the Theil index, rose between 1820 and 1980 and strongly declined since then. In 2020, between-country inequality makes-up about a third of global inequality between individuals. The rest is due to inequality within countries. Income is measured per capita after pension and unemployement insurance transfers and before income and wealth taxes.   
+**Sources and series**: wir2022.wid.world/methodology and Chancel and Piketty (2021).
+
+
+```{r}
+df_f6 %>% select(year = "...1", 2:3) %>%
+  pivot_longer(cols = 2:3, names_to = "type", values_to = "value") %>%
+  ggplot(aes(x = year, y = value, fill = type)) +
+  geom_area() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 6. Global income inequality:", 
+       subtitle = "Between vs. within country inequality (Theil index), 1820-2020",
+       x = "", y = "Share of global inequality (% of total Theil index)")
 ```
 
 ### F7: Global income inequality, 1820-2020
@@ -91,6 +256,19 @@ df_f6
 df_f7 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F7")
 df_f7
 ```
+
+```{r}
+df_f7 %>% select(year = y, 2:4) %>%
+  pivot_longer(cols = 2:4, names_to = "type", values_to = "value") %>%
+  ggplot(aes(x = year, y = value, color = type)) +
+  stat_smooth(span = 0.25, se = FALSE) +
+  scale_x_continuous(breaks = round(seq(1820, 2020, by = 20),1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 7. Global income inequality, 1820-2020", 
+       x = "", y = " Share of total world income (%)", color = "") +
+  annotate("text", x = 1980, y = 0.20, label = stringr::str_wrap("The global bottom 50% income share remains historically low despite growth in the emerging world in the past decades.", width = 30), size = 3)
+```
+**Interpretation**. The share of global income going to top 10% highest incomes at the world level has fluctuated around 50-60% between 1820 and 2020 (50% in 1820, 60% in 1910, 56% in 1980, 61% in 2000, 55% in 2020), while the share going to the bottom 50% lowest incomes has generally been around or below 10% (14% in 1820, 7% in 1910, 5% in 1980, 6% in 2000, 7% in 2020). Global inequality has always been very large. It rose between 1820 and 1910 and shows little long-run trend between 1910 and 2020. Distribution of per capita incomes. Sources and series: see wir2022.wid.world/methodology and Chancel and Piketty (2021).
 
 ### F8: The rise of private versus the decline of public wealth in rich countries, 1970-2020
 
@@ -150,4 +328,14 @@ df_f14
 df_f15 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F15")
 df_f15
 ```
+### T1 Global millionaires and billionaires, 2021
+
+Check the format of the sheet and add `skip=4, n_max=7`.
+
+```{r T1}
+df_t1 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", 
+                    sheet = "T1", skip = 4, n_max = 7)
+df_t1
+```
+
 
