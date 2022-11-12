@@ -21,6 +21,7 @@ output:
 ## Setup
 
 * Data: https://wir2022.wid.world/www-site/uploads/2022/03/WIR2022TablesFigures-Summary.xlsx
+* Data are in Excel format and charts are also created in Excel.
 
 ```{r}
 library(tidyverse)
@@ -37,10 +38,14 @@ summary_sheets <- excel_sheets("data/WIR2022TablesFigures-Summary.xlsx")
 summary_sheets
 ```
 
+* Note that some of the sheet names contain a period.
+
 ```{r}
 df_index <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "Index")
 df_index
 ```
+* The list of the titles of the tables and the figures.
+
 ## Data and Charts
 
 ### F1: Global income and wealth inequality, 2021
@@ -276,6 +281,18 @@ df_f7 %>% select(year = y, 2:4) %>%
 df_f8 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F8")
 df_f8
 ```
+```{r}
+df_f8 %>% 
+  pivot_longer(!year, names_to = "group", values_to = "value") %>%
+  ggplot() +
+  stat_smooth(aes(x = year, y = value, color = group), span = 0.25, se = FALSE, size=0.75) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 8. The rise of private versus the decline of public wealth in rich countries, 1970-2020", 
+       x = "", y = "wealth as as % of national income", color = "")
+```
+**Interpretation**: Public wealth is the sum of all financial and non-financial assets, net of debts, held by governments. Public wealth dropped from 60% of national income in 1970 to -106% in 2020 in the UK.   **Sources and series**: wir2022.wid.world/methodology, Bauluz et al. (2021) and updates.
+
+
 
 ### F9: Average annual wealth growth rate, 1995-2021
 
@@ -283,6 +300,17 @@ df_f8
 df_f9 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F9")
 df_f9
 ```
+```{r}
+df_f9 %>% select(p, wealth = 'Wealth growth 1995-2021') %>%
+  ggplot() +
+  stat_smooth(aes(x = p, y = wealth), span = 0.25, se = FALSE) +
+#  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
+       x = "←1% poorest                               Global wealth group                                 0.001% richest→", y = "Per adult annual growth rate in wealth, net of inflation (%)", color = "")
+```
+**Interpretation**: Growth rates among the poorest half of the population were between 3% and 4% per year, between 1995 and 2021. Since this group started from very low wealth levels, its absolute levels of growth remained very low. The poorest half of the world population only captured 2.3% of overall wealth growth since 1995. The top 1%  benefited from high growth rates (3% to 9% per year). This group captured 38% of total wealth growth between 1995 and 2021. Net household wealth is equal to the sum of financial assets (e.g. equity or bonds) and non-financial assets (e.g. housing or land) owned by individuals, net of their debts.   
+**Sources and series**: wir2022.wid.world/methodology.
 
 ### F10: The share of wealth owned by the global 0.1% and billionaires, 2021
 
@@ -291,11 +319,70 @@ df_f10 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F10
 df_f10
 ```
 
+```{r}
+df_f10 %>% 
+  select(year, "Global Billionaire Wealth" = bn_hhweal, "Top 0.01%" = top0.1_hhweal) %>%
+  pivot_longer(!year, names_to = "group",".value", values_to = "value") %>%
+  ggplot() +
+  stat_smooth(aes(x = year, y = value, color = group), span = 0.25, se = FALSE) +
+  scale_x_continuous(breaks = round(seq(1995, 2020, by = 5),1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_color_manual(values=rev(scales::hue_pal()(2))) +
+  labs(title = "Figure 10. Extreme wealth inequality: \nthe rise of global billionaires and top 0.01%, 1995-2021", 
+       x = "", y = "Share of total household wealth (%)", color = "")
+```
+**Interpretation**: The share of wealth detained by the world's billionaires rose from 1% of total household wealth in 1995 to nearly 3.5% today. The threshold of top 0.01%, composed of 520 000 adults, grew from €693,000 (PPP) in 1995 to €16,666,000 today. The net household wealth is equal to the sum of financial assets (e.g. equity or bonds) and non-financial assets (e.g. housing or land) owned by individuals, net of their debts.   
+**Sources and series**: wir2022.wid.world/methodology, Bauluz et al. (2021) and updates.
+
+
 ### F11: Top 1% vs bottom 50% wealth shares in Western Europe and the US, 1910-2020
 
 ```{r data-f11, cash = TRUE}
 df_f11 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F11")
 df_f11
+```
+
+```{r}
+df_f11 %>% 
+  rename(!year, US_bot50 = USbot50, US_top1 = UStop1, EU_bot50 = EUbot50, EU_top1 = EUtop1) %>%
+  pivot_longer(!year, names_to = c("group",".value"), names_sep = "_") %>%
+  ggplot() +
+  stat_smooth(aes(x = year, y = top1, color = group), span = 0.25, se = FALSE) +
+  stat_smooth(aes(x = year, y = bot50, color = group), span = 0.25, se = FALSE, linetype = 2) +
+  scale_x_continuous(breaks = round(seq(1910, 2020, by = 10),1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 11. Top 1% vs bottom 50% wealth shares \n in Western Europe and the US, 1910-2020", 
+       x = "", y = "Share of total personal wealth (%)", color = "") +
+  annotate("text", x = 2000, y = 0.50, label = stringr::str_wrap("Wealth inequality has been rising at different speeds after a historical decline. The bottom 50% has always been extremely low.", width = 30), size = 3)
+```
+**Interpretation**: The graph presents decennal averages of top 1% personal wealth shares in Western Europe and the US. Between 1910 and 2020, the top 1% was 55% on average in Europe vs. 43% in the US. A century later, the US is almost back to its early 20th century level. Sources and series: wir2022.wid.world/methodology.
+
+```{r}
+df_f11 %>% 
+  rename(!year, US_bot50 = USbot50, US_top1 = UStop1, EU_bot50 = EUbot50, EU_top1 = EUtop1) %>%
+  pivot_longer(!year, names_to = c("group",".value"), names_sep = "_") %>%
+  pivot_longer(3:4, names_to = "type", values_to = "value") %>%
+  ggplot() +
+  stat_smooth(aes(x = year, y = value, color = group, linetype = type), span = 0.25, se = FALSE) +
+  scale_x_continuous(breaks = round(seq(1910, 2020, by = 10),1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 11. Top 1% vs bottom 50% wealth shares \n in Western Europe and the US, 1910-2020", 
+       x = "", y = "Share of total personal wealth (%)", color = "", linetype = "") +
+  annotate("text", x = 2000, y = 0.50, label = stringr::str_wrap("Wealth inequality has been rising at different speeds after a historical decline. The bottom 50% has always been extremely low.", width = 30), size = 3)
+```
+```{r}
+df_f11 %>% 
+  rename(!year, US_bot50 = USbot50, US_top1 = UStop1, EU_bot50 = EUbot50, EU_top1 = EUtop1) %>%
+  pivot_longer(!year, names_to = c("group",".value"), names_sep = "_") %>%
+  pivot_longer(3:4, names_to = "type", values_to = "value") %>%
+  ggplot() +
+  stat_smooth(aes(x = year, y = value, color = group, linetype = type), span = 0.25, se = FALSE) +
+  scale_x_continuous(breaks = round(seq(1910, 2020, by = 10),1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 11. Top 1% vs bottom 50% wealth shares \n in Western Europe and the US, 1910-2020", 
+       x = "", y = "Share of total personal wealth (%)", color = "", linetype = "") +
+  scale_linetype_manual(values = c("dotted","solid")) +
+  annotate("text", x = 2000, y = 0.50, label = stringr::str_wrap("Wealth inequality has been rising at different speeds after a historical decline. The bottom 50% has always been extremely low.", width = 30), size = 3)
 ```
 
 ### F12: Female share in global labor incomes, 1990-2020
@@ -304,6 +391,23 @@ df_f11
 df_f12 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F12")
 df_f12
 ```
+
+```{r}
+df_f12 %>% 
+  select(year = "Data needs to be updated", value = ...2) %>%
+  filter(!is.na(year)) %>%
+  ggplot(aes(x = year, y = value)) +
+  geom_col(width = 0.5, fill = "blue") +
+  geom_hline(yintercept = 0.5, linetype = 2, colour = "red") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 12. Female share in global labor incomes, 1990-2020", 
+        x = "", y = "") +
+  annotate("text", x = 1, y = 0.48, label = "Gender parity", size = 3) +
+  annotate("text", x = 5.2, y = 0.47, label = stringr::str_wrap("Women make only 35% of global labor incomes, men make the remaining  65%.", width = 40), size = 3)
+```
+**Interpretation**: The share of female incomes in global labour incomes was 31% in 1990 and nears 35% in 2015-2020. Today, males make up 65% of total labor incomes. Sources and series: wir2022.wid.world/methodology and Neef and Robilliard (2021).
+
+
 ### F13: Female labor income share across the world, 1990-2020
 
 Note that the sheet name of F13 has period at the end. Note that `summary_sheets[30] = ``r summary_sheets[30]` with a period.
@@ -312,6 +416,19 @@ Note that the sheet name of F13 has period at the end. Note that `summary_sheets
 df_f13 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F13.")
 df_f13
 ```
+
+```{r}
+df_f13 %>% pivot_longer(2:9, names_to = "region", values_to = "value") %>%
+  ggplot(aes(x = region, y = value, fill = ...1)) +
+  geom_col(position = "dodge") + 
+  geom_hline(yintercept = 0.5, linetype = 2, colour = "red") +
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 12)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 13. Female labor income share across the world, 1990-2020", 
+        x = "", y = "", fill = "") +
+  annotate("text", x = 1.2, y = 0.48, label = "Gender parity", size = 3)
+```
+**Interpretation**: The female labour income share rose from 34% to 38% in North America between 1990 and 2020. Sources and series: wir2022.wid.world/methodology and Neef and Robilliard (2021).
 
 ### F14: Global carbon inequality, 2019. Group contribution to world emissions (%)
 
@@ -322,12 +439,43 @@ df_f14 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F14
 df_f14
 ```
 
+* `\n` for line break in the title.
+
+```{r}
+df_f14 %>% 
+  ggplot(aes(x = Group, y = Share)) +
+  geom_col(width = 0.5, fill = "blue") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 14. Global carbon inequality, \n2019 Group contribution to world emissions (%)", 
+       x = "", y = "Share of world emissions (%)")
+```
+
+**Interpretation**: Personal carbon footprints include emissions from domestic consumption, public and private investments as well as imports and exports of carbon embedded in goods and services traded with the rest of the world. Modeled estimates based on the systematic combination of tax data, household surveys and input-output tables. Emissions split equally within households. Sources and series: wir2022.wid.world/methodology and Chancel (2021).
+
 ### F15: Per capita emissions acriss the world, 2019
 
 ```{r data-f15, cash = TRUE}
 df_f15 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F15")
 df_f15
 ```
+```{r}
+df_f15 %>% mutate(region = rep(regionWID[!is.na(regionWID)], each = 3)) %>%
+  select(region, group, tcap) %>%
+  ggplot(aes(x = region, y = tcap, fill = group)) +
+  geom_col(position = "dodge") + 
+  scale_x_discrete(labels = function(x) stringr::str_wrap(x, width = 10)) +
+  labs(title = "Figure 15 Per capita emissions across the world, 2019", 
+       x = "", y = "tonnes of CO2e per person per year", fill = "")
+```
+**Interpretation**: Personal carbon footprints include emissions from domestic consumption, public and private investments as well as imports and exports of carbon embedded in goods and services traded with the rest of the world. Modeled estimates based on the systematic combination of tax data, household surveys and input-output tables. Emissions split equally within households. Sources and series: wir2022.wid.world/methodology and Chancel (2021).
+
+
+```{r}
+region_test <- rep(df_f15$regionWID[!is.na(df_f15$regionWID)], each = 3)
+region_test
+```
+
+
 ### T1 Global millionaires and billionaires, 2021
 
 Check the format of the sheet and add `skip=4, n_max=7`.
@@ -337,5 +485,5 @@ df_t1 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx",
                     sheet = "T1", skip = 4, n_max = 7)
 df_t1
 ```
-
+**Interpretation**: In 2021, there were 62.2 million people in the world owning more than $1 million (measured at Market Exchange Rates). Their average wealth was $ 2.8 million, representing a total of  $174 trillion. In our Tax scenario 2, a global progressive wealth tax would yield 2.1% of global income, taking into account capital depreciation and evasion. Sources and series: wir2022.wid.world/methodology.
 
