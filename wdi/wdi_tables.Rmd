@@ -1,6 +1,6 @@
 ---
-title: "Title of R Notebook"
-author: "ID and Your Name"
+title: "Tables of WDI"
+author: "DS-SL"
 date: "`r Sys.Date()`" 
 output: 
   html_notebook:
@@ -9,17 +9,27 @@ output:
 #    toc_float: true
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+```{r setup}
+Sys.setenv(LANG = "en")
+dir.create("data")
+library(tidyverse)
+library(WDI)
+library(readxl)
+```
+# World Bank
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+World Bank Home: https://www.worldbank.org/
+
+# Data の入手
+
+A. WORLD DEVELOPMENT INDICATORS: https://datatopics.worldbank.org/world-development-indicators/
+B. World Development Indicators: http://wdi.worldbank.org/tables
+
+## WORLD DEVELOPMENT INDICATORS
+
+https://databank.worldbank.org/reports.aspx?source=world-development-indicators
 
 ```{r}
-plot(cars)
+WDIsearch(string = "WV.1", field = "indicator")
 ```
-
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
 
