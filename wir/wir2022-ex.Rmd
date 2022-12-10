@@ -11,11 +11,18 @@ output:
 
 # Introduction
 
+In this note, we study how to construct charts presented in World Inequality Report. We focus on the Executive Summary, however, we hope that you can study the report in more detail using the original data provided in the site.
+
 ## WIR2022
 
 * World Inequality Report: https://wir2022.wid.world/
 * Executive Summary: https://wir2022.wid.world/executive-summary/
 * Methodology: https://wir2022.wid.world/methodology/
+
+There is an R package to make it easier to download the data.
+
+* [R package to download data from the WID.world database](https://github.com/thomasblanchet/wid-r-tool)
+
 
 # Executive Summary
 
@@ -742,6 +749,17 @@ df_f9_rev
 df_f9_rev %>% select(pp, wealth = 'Wealth growth 1995-2021') %>%
   ggplot() +
   stat_smooth(aes(x = pp, y = wealth), span = 0.25, se = FALSE) +
+#  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
+       x = "←1% poorest                               Global wealth group                                 0.001% richest→", y = "Per adult annual growth rate in wealth, net of inflation (%)", color = "")
+```
+##### Step 2.
+
+```{r}
+df_f9 %>% select(p, wealth = 'Wealth growth 1995-2021') %>%
+  ggplot() +
+  geom_point(aes(x = p, y = wealth)) +
 #  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
