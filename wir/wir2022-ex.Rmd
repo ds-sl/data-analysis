@@ -1,5 +1,5 @@
 ---
-title: "World Inequality Report 2022: Exercises"
+title: "World Inequality Report 2022: Examples"
 author: "DS-SL"
 date: "`r Sys.Date()`" 
 output: 
@@ -28,7 +28,7 @@ There is an R package to make it easier to download the data.
 
 ## Setup
 
-```{r include=FALSE}
+```{r setup, include=FALSE}
 Sys.setenv(LANG = "en")
 dir.create("data")
 ```
