@@ -13,10 +13,8 @@ output:
 
 R Notebook File for my personal learning created by DS-SL.
 
-```{r}
-library(tidyverse)
-```
-
+1. Error in 8.4 2要因の分散分析②（2要因とも対応あり）
+2. Error in 8.5 2要因の分散分析③（1要因のみ対応あり）
 
 # Rと統計学
 ## データマイニングの時代だ
@@ -424,7 +422,7 @@ data <- read.table("clipboard", # ファイル名を"clipboard"にする
 
 The above code does not work for Mac and probably for Linux using X11. Use the following.
 
-```{r}
+```{r eval=FALSE}
 data <- read_delim(clipboard())
 data
 ```
@@ -588,15 +586,64 @@ data
 # データの全体像を解析する（代表値）
 ## データをならして出てくる代表値（平均）
 ### 平均を求める
+
+```{r}
+# access.csvをデータフレームに読み込む
+df <- read.csv("data/access.csv", encoding = "UTF-8")
+
+# アクセス数の平均を求める
+access_mean <- mean(df$アクセス数)
+# 出力
+access_mean
+```
+
 #### 平均値を求める式
 ## データの分布を棒グラフで見やすくしよう（ヒストグラム）
 ### 度数分布表筐｡ヒストグラムの作成こそが統計の第一歩
+
+```{r}
+# access.csvを読み込んでデータフレームに格納
+df <- read.csv("data/access.csv", encoding="UTF-8")
+# 階級を自動で設定してヒストグラムを作成
+hist(df$アクセス数)  # "アクセス数"の列を対象にする
+```
+
 #### ヒストグラムは「階級の幅」を決めて「階級」を作る
 ## 階級幅を独自に指定したヒストグラムを作る
 ### 階級幅や棒グラフの色を指定してヒストグラムを作成する
 #### 最小値と最大値を調べてヒストグラムの下限値と上限値を決定する（手順①～②）
 #### ヒストグラムの作成（手順③）
 #### コードを入力してヒストグラムを作成してみる
+
+```{r}
+# access.csvをデータフレームに格納
+df <- read.csv("data/access.csv", encoding="UTF-8")
+
+# 階級の幅
+w <- 10
+# アクセス数の最小値、最大値を求める
+fnum <- fivenum(df$アクセス数)
+# 最小値の上位2桁で丸め、階級幅×2を引く
+min <- signif(fnum[1], 2) - (w*2)
+# 最大値に階級の幅×2を加える
+max <- fnum[5] + (w*2)
+
+# アクセス数のヒストグラムを作成
+hist(
+  # データフレームのアクセス数の列を指定
+  df$アクセス数,
+  # ヒストグラムの下限値、上限値、階級の幅をベクトルで指定
+  breaks = seq(min, max, by = w),
+  # タイトルを設定
+  main = "アクセス状況",
+  # 横軸のラベル
+  xlab = "アクセス数",
+  # 縦軸のラベル
+  ylab = "頻度",
+  # 棒グラフの色を設定
+  col="limegreen")
+```
+
 ### Memo 階級の幅 {-}
 #### ヒストグラムの山は1つか2つ以上か
 ## 度数分布表から相対度数分布表を作る
@@ -604,13 +651,134 @@ data
 #### 度数分布表を作成し、これをもとに相対度数分布表を作成する
 #### 相対度数を棒グラフにしてみる
 #### 相対度数分布表を作成する関数を定義する
+
+```{r}
+# access.csvをデータフレームとしてdataに代入
+data <- read.csv("data/access.csv", encoding="UTF-8")
+# ヒストグラムを作成し、hist()の戻り値をhstに代入
+hst <- hist(data$アクセス数)
+# 出力
+hst
+
+# 度数分布表を作成
+freq <- data.frame(
+  "階級値"=hst$mids, # 1列目は階級値
+  "度数"=hst$counts  # 2列目は度数
+)
+
+# 各階級の度数（ベクトル）をデータの数で割って
+# 階級ごとの相対度数を求める
+rela_freq <- hst$counts / length(data$アクセス数)
+# 出力
+rela_freq
+
+# 累積相対度数を求める
+cumu_freq <- cumsum(rela_freq)
+# 出力
+cumu_freq
+
+# 相対度数分布表を作成
+freqtable <- data.frame(
+  freq,                     # 度数分布表
+  "相対度数"=rela_freq,     # 階級ごとの相対度数
+  "累積相対度数"=cumu_freq  # 階級ごとの累積相対度数
+)
+
+# 相対度数の棒グラフを作成
+barplot(
+  freqtable$相対度数,          # 「freqtableの$相対度数」をグラフにする
+  names.arg = freqtable$階級値,# グラフの横軸を階級値にする
+  col = "RED",                 # 棒の色は赤
+  border = TRUE,               # 棒の境界線を表示
+  space = 0                    # 棒と棒の間のスペースは0
+)
+```
+
+```{r}
+# 「frequency-function.R」を読み込む
+source("data/frequency-function.R", encoding="UTF-8")
+# access.csvをデータフレームとしてdataに代入
+df <- read.csv("data/access.csv", encoding="UTF-8")
+# frequency()関数を実行して相対度数分布表を出力する
+frq = frequency(df)
+```
+
 ## 平均の足を引っ張るデータを除外する（トリム平均）
 ### 平均は真ん中くらいの値ではなかった
 #### mean()関数のオプションを使って「トリム平均」を求める
+
+```{r}
+# 店舗別売上.txtをデータフレームdataに代入
+data <- read.table(
+  "data/店舗別売上.txt",    # 対象のファイル
+  header=TRUE,         # 1行目は見出し
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+# 各店舗の売上高の平均を求める
+average = mean(data$"売上高_千円")
+# 出力
+average
+
+# 各店舗の売上高をヒストグラムにする
+hist(data$"売上高_千円")
+
+# 売上高が0のダミーデータを2件追加
+data = rbind(
+  data, 
+  data.frame(店舗名="dummy", 売上高_千円=0),
+  data.frame(店舗名="dummy", 売上高_千円=0)
+  )
+
+# 上側と下側からそれぞれの2件の外れ値を除いた
+# トリム平均を求める
+trim_mean = mean(
+  data$"売上高_千円", # 集計の対象
+  trim = 0.1          # 上側と下側の10％を除外
+)
+# 出力
+trim_mean
+```
+
 ## しっくりこないならど真ん中の値を見付けよう（中央値）
 ### 平均とは違う、データの「ど真ん中」の値
 #### 散らばったデータのど真ん中を指す中央値
 #### summary()関数で最大、最小、平均、中央値をまとめて調べる
+
+```{r}
+# 店舗別売上.txtをデータフレームに読み込む
+data <- read.table(
+  "data/店舗別売上.txt",    # ファイル名
+  header=T,            # 1行目は列名であることを指定
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+# 中央値を求める
+m <- median(data$売上高_千円)
+# 出力
+cat("中央値", m)
+```
+
+```{r}
+# データのサマリを出力する関数
+showSummary <- function(data) {
+  smm = summary(data)
+  cat("最小値", smm["Min."] ,"\n")
+  cat("第一数", smm["1st Qu."],"\n")
+  cat("中央値", smm["Median"],"\n")
+  cat("平均値", smm["Mean"],"\n")
+  cat("第三数", smm["3rd Qu."],"\n")
+  cat("最大値", smm["Max."],"\n")
+}
+
+# 店舗別売上.txtをデータフレームに読み込む
+data <- read.table(
+  "data/店舗別売上.txt",
+  header=T,
+  fileEncoding="UTF-8"
+)
+
+# データフレームの列を引数にしてshowSummary()関数を実行
+showSummary(data$売上高_千円)
+```
 
 # データのバラツキ具合を知る（偏差、分散、標準偏差）
 ## データのバラツキ具合を数字で表す（偏差、分散）
@@ -618,9 +786,10 @@ data
 ### 個々のデータの平均との差を調べて全体の散らばり具合を知る
 #### 平均からどのくらい離れているのかを表すのが「偏差」
 #### 偏差を求める
+
 ### 偏差を2乗した「偏差平均」を平均して「分散」を求める
 #### 偏差平方の平均が「分散」
-### Hint データに手を加えると平均、分散はどうなる？ {-}
+
 ## そのデータは「優秀」なのかそれとも「普通」？（標準偏差）
 ### Memo 平均や分散、標準偏差の記号について {-}
 ### 新規オープン店の売上数は突出しているのか
@@ -628,12 +797,171 @@ data
 ### データの特殊性を「標準化」した数値で表す
 #### 商品Aと商品Bの販売数をすべて標準化する
 ### Memo 平方根について {-}
+
+
+```{r}
+# 販売数.txtをデータフレームに格納
+data <- read.table(         
+  "data/販売数.txt",
+  header=T,                 # 1行目は列名
+  fileEncoding="UTF-8"      # 文字コードの変換方式
+)
+# 商品Aのヒストグラムを作成
+hist(data$商品A)
+# 商品Bのヒストグラムを作成
+hist(data$商品B)
+
+# 商品Aの平均を求める
+mean_A = mean(data$商品A)
+# 商品Aの販売数をベクトルに代入
+num_A <- data$商品A
+# 商品Aの偏差を求める
+dev_A <- num_A - mean_A
+# 出力
+cat("商品Aの偏差：\n",dev_A, "\n")
+
+# 商品Bの平均を求める
+mean_B = mean(data$商品B)
+# 商品Bの販売台数をベクトルに代入
+num_B <- data$商品B
+# 商品Bの偏差を求める
+dev_B <- num_B - mean_B
+# 出力
+cat("商品Bの偏差：\n",dev_B, "\n")
+
+# 商品Aの分散を求める
+dspr_A <- sum(dev_A^2) / length(data$商品A)
+# 出力
+cat("商品Aの分散：", dspr_A, "\n")
+
+# 商品Bの分散を求める
+dspr_B <- sum(dev_B^2) / length(data$商品B)
+# 出力
+cat("商品Bの分散：", dspr_B, "\n")
+```
+
 ## 来客数が平均より多いのは「繁盛」しているといえるか
 ### 標準偏差を「尺度」にする
 #### 来客数の標準偏差と標準化係数を求める
 ### データの偏差が標準偏差の±1個ぶんの範囲内であれば平凡なデータだと判断できる
 #### 標準化係数でデータの特殊性を知る
 #### 標準化した値の平均は0で標準偏差は1
+
+
+```{r}
+# 分散を求める関数
+getDisper <- function(x) {
+  # 偏差を求める
+  dev <- x - mean(x)
+  # 偏差平方和をデータ数で割った分散を返す
+  return(sum(dev^2) / length(x))
+}
+
+# 販売数.txtをデータフレームに読み込む
+data <- read.table(
+  "data/販売数.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 商品Aのデータをベクトルに代入
+num_A  <- data$商品A
+# 商品Aの分散を求める
+dspr_A <- getDisper(num_A)
+# 平方根をとって標準偏差を求める
+sd_A   <- sqrt(dspr_A)
+# 出力
+cat("商品Aの標準偏差：", sd_A, "\n")
+
+# 商品Bのデータをベクトルに代入
+num_B  <- data$商品B
+# 商品Bの分散を求める
+dspr_B <- getDisper(num_B)
+# 平方根をとって標準偏差を求める
+sd_B   <- sqrt(dspr_B)
+# 出力
+cat("商品Bの標準偏差：", sd_B, "\n")
+```
+
+```{r}
+# 標準偏差を求める関数
+getSD <- function(x) {
+  # 分散の平方根をとった値(標準偏差)を返す
+  return(
+    sqrt(sum((x - mean(x))^2) / length(x)))
+}
+
+# 販売数.txtをデータフレームに読み込む
+data <- read.table(
+  "data/販売数.txt",
+  header=T,            # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 商品Aのデータをベクトルに代入
+num_A  <- data$商品A
+# 商品Aの標準偏差を求める
+sd_A <- getSD(num_A)
+# 出力
+cat("商品Aの標準偏差：", sd_A, "\n")
+
+# 商品Bのデータをベクトルに代入
+num_B  <- data$商品B
+# 商品Bの標準偏差を求める
+sd_B   <- getSD(num_B)
+# 出力
+cat("商品Bの標準偏差：", sd_B, "\n")
+```
+
+```{r}
+# 標準偏差を求める関数
+getSD <- function(x) {
+  # 分散の平方根をとった値(標準偏差)を返す
+  return(
+    sqrt(sum((x - mean(x))^2) / length(x)))
+}
+
+# 販売数.txtをデータフレームに読み込む
+data <- read.table(
+  "data/販売数.txt",
+  header=T,            # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 商品Aのデータをベクトルに代入
+num_A  <- data$商品A
+# 商品Aの平均を求める
+mean_A  <- mean(num_A)
+# 商品Aの標準偏差を求める
+sd_A <- getSD(num_A)
+# 商品Aの売上数を標準化
+standardize_A <- (num_A - mean_A)/sd_A
+# 出力
+standardize_A
+
+# 商品Bのデータをベクトルに代入
+num_B  <- data$商品B
+# 商品Bの平均を求める
+mean_B  <- mean(num_B)
+# 商品Bの標準偏差を求める
+sd_B   <- getSD(num_B)
+# 商品Bの売上数を標準化
+standardize_B <- (num_B - mean_B)/sd_B
+# 出力
+standardize_B
+
+# 売上数(95)を商品Aの標準偏差で標準化して出力
+(95 - mean_A)/sd_A
+# 売上数(95)を商品Bの標準偏差で標準化して出力
+(95 - mean_B)/sd_B
+
+# 商品Aの標準化係数の平均
+mean(standardize_A)
+# 商品Bの標準化係数の平均
+mean(standardize_B)
+```
+
+### Hint データに手を加えると平均、分散はどうなる？ {-}
 ## 来店者の数が上位5％に入る日を調べる
 ### 正規分布のグラフの形は平均と標準偏差で決まる
 #### 標準正規分布のグラフ
@@ -645,6 +973,77 @@ data
 ### 上位5％に入る来店者数を見付けよう
 #### 標準正規分布の数表を使って上位5％の区間面積に対するxの値を求めよう
 
+```{r}
+# 0～2を0.01刻みにしたシーケンス(数列)を生成
+n <- seq(0, 2, by = 0.01) # ---------------------①
+# 標準正規分布の確率密度関数で確率密度を求める
+dn <- dnorm(n, mean=0, sd=1) # ------------------②
+
+# 区間面積用の空の数値ベクトルを作る
+s_area <- as.numeric(NULL) # --------------------③
+# 累積面積用の数値ベクトルを作る
+t_area <- as.numeric(NULL) # --------------------④
+
+# 区間面積と累計面積を計算
+# カウンター変数
+i <- 0 # ----------------------------------------⑤
+# nの要素の数だけ繰り返す
+for (value in n){ # -----------------------------⑥
+  # valueが0のときの初期化処理
+  if(value == 0){ # -----------------------------⑦
+    s_area <- 0  # 区間面積を0とする
+    t_area <- 0  # 累計面積を0とする
+    i <- i + 1   # カウンターの値を1増やす
+  } else { # ------------------------------------⑧
+    # valueが0以外(2回目以降)の処理
+    # 区間面積のベクトルに現在の区間面積を追加
+    s_area <- c(
+      # s_areaの末尾に連結する
+      s_area,
+      # 現在の区間面積を台形の面積で近似する
+      # 0.01区切りなので台形の高さは0.01
+      (dn[i] + dn[i+1]) * 0.01 / 2
+      )
+    # 累計面積のベクトルに現在の累計面積を追加
+    t_area <- c(
+      # t_areaの末尾に連結する
+      t_area,
+      # 累計面積に現在の区間面積を加算する
+      t_area[i] + s_area[i+1]
+    )
+    # カウンター変数に1を加算
+    i <- i + 1
+    }
+}
+
+# 標準正規分布の数表としてデータフレームを作成
+dframe <- data.frame( # -------------------------⑨
+  x_value = n,           # x_valueカラムは0～2までの連続値
+  section_area = s_area, # section_areaカラムは区間面積
+  total_area   = t_area  # total_areaカラムは累計面積
+)
+
+# 数表をテキストファイルに保存
+write.table(
+  dframe,                      # 書き出すデータフレーム
+  file="data/std-distribution.txt", # ファイル名
+  sep="\t",                    # 区切り文字
+  row.names = FALSE)           # 設定されている行番号は書き込みしない
+
+# x=1からx=2までの区間の確率密度をグラフにする
+curve(dnorm(x,mean=0, sd=1), from=0, to =2)
+```
+
+```{r}
+# 上位5%に入る来店者数
+qnorm(0.95, mean=54, sd=10)
+```
+
+```{r}
+# 標準正規分布のグラフを-4から4までの区間で描く
+curve(dnorm(x,mean=0, sd=1), from=-4, to =4)
+```
+
 # 正規分布するデータを解析する
 ## 売上の平均が38万円のとき45万円以上売上げる確率は？
 ### Hint 数学定数の「ネイピア数」{-}
@@ -654,11 +1053,91 @@ data
 #### Onepoint ××万円以上○○万円以下の売上が発生する確率は？
 ### 売上が40万円以上になる確率を求めてみよう
 #### 30万～60万円を5万円刻みにして、それぞれの累積確率を求める
+
+```{r}
+# 売上状況.txtをデータフレームに格納
+data <- read.table(
+  "data/売上状況.txt",      # ファイル名
+  header=TRUE,         # 1行目は列名であることを指定
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 標準偏差を返す関数
+getSd <- function(x) {                  
+  return(sqrt(                         # 分散の平方根
+    sum((x - mean(x))^2) / length(x))) # 分散の計算式
+  }
+
+# 売上額のデータをベクトルに格納
+num <- data$売上額
+# 売上額の標準偏差を求める
+sales_sd <- getSd(num)
+# 30～60までの5刻みのシーケンスを生成
+seq <- seq(30, 60, by=5)                
+
+# 累積確率を求める
+cmp <- pnorm(
+  seq,                      # 累積確率を求めるデータ
+  mean = mean(data$売上額), # 売上額の平均
+  sd = sales_sd,            # 売上額の標準偏差
+  lower.tail = TRUE         # 下側の累積確率を求める
+)
+
+# 30～60万円までの5万円刻みの売上額と累積確率をデータフレームに格納
+prob <- data.frame(
+  "売上額"=seq,
+  "累積確率"=cmp
+)
+
+# 売上が40万円以上になる確率を求める
+1 - prob[3,2]
+```
+
 ## 偏差値の仕組み
 ### 標準化した値を10倍にして50を足すのは何のためか
 #### 偏差値を求めてみる
 ### 標準偏差を用いた合格判定の仕組み
 #### 平均と標準偏差、あとはデータの数で合否を推測する
+
+```{r}
+# テスト結果.txtをデータフレームに格納
+data <- read.table(
+  "data/テスト結果.txt",    # ファイル名
+  header=T,            # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 標準偏差を返す関数
+getSd <- function(x) {                  
+  return(sqrt(                         # 分散の平方根
+    sum((x - mean(x))^2) / length(x))) # 分散の計算式
+}
+
+# 得点をベクトルに代入
+score <- data$得点
+# 得点の標準偏差を求める
+score_sd <- getSd(score)
+# 得点の平均
+men <- mean(score)
+# 全員の偏差値を求める
+dev <- (data$得点 - men)/score_sd*10 + 50 
+
+# 偏差値をデータフレームに追加
+data <- cbind(                
+  data,                       # もとのデータフレーム
+  data.frame("偏差値" = dev)  # 偏差値のデータフレームを作成
+  )
+```
+
+```{r}
+pnorm(2, mean=0,sd=1) - 0.5
+
+pnorm(80, mean=60,sd=10)
+1 - 0.9772499
+
+pnorm(80, mean=56, sd=8)
+```
+
 ## バラバラに分布するデータを正規分布に近似する（大数の法則）
 ### 1000人ぶんのサンプルで10万人ぶんの相対度数分布グラフが描かれる
 #### 10万人の中から1人ずつ選んで1000回計測したらどうなる？（復元抽出）
@@ -667,6 +1146,12 @@ data
 ## 正規分布の再生性
 ### 正規分布は2つを重ねても分布の形が保存される
 #### 正規分布の再生性
+
+```{r}
+qnorm(0.5+0.45, mean=0, sd=1)
+110 + 10*1.64
+```
+
 ### Memo 「大数の法則」でサンプルの相対度数分布が母集団のデータとぴったり一致！{-}
 ### Memo 中心極限定理 {-}
 ## ピンポイントでズバリ当てる（点推定）
@@ -677,6 +1162,43 @@ data
 #### 最尤法による推定
 #### 不偏推定量による推定
 #### 点推定の結果を見る
+
+```{r}
+# 英語のテスト結果
+test <- c(                                
+  75, 68, 96, 76, 84, 74, 64,	94,	77,	82,
+  86, 56,	82,	69,	59,	81,	61,	85,	64,	63,
+  68,	79,	61,	57,	63,	89,	74,	63,	71,	69,
+  95,	84,	76
+)
+
+# 分散を返す関数
+getDisper <- function(x) {
+  # すべてのデータについて偏差を求める
+  dev <- x - mean(x)
+  # 分散を返す
+  return(sum(dev^2) / length(x))
+}
+
+# 先頭から5人の平均点を求める
+cat("標本平均:", mean(test[1:5]))
+# 先頭から5人の分散を求める
+cat("標本分散:", getDisper(test[1:5]))
+
+# 先頭から5人の不偏分散を求める
+cat("不偏分散:", var(test[1:5]))
+```
+
+```{r}
+# 10人の得点
+test <- c(3, 3, 4, 4, 5, 5, 5, 6, 7, 8)
+# 標本平均
+mean(test)
+# 不偏分散
+var(test)
+```
+
+
 ## サイコロを振ると1の目が出る確率は？
 ### 確率変数とその定義
 #### 偶数の目が出る確率は
@@ -684,6 +1206,60 @@ data
 #### 確率の定義
 #### 離散型一様分布の確率質量関数
 #### サイコロを振ると本当に6分の1の確率で各目が出るのか
+
+```{r}
+# 1～6までの範囲の値を6回、ランダムに生成する
+# runif()の出力は小数を含むのでfloor()で切り捨てる
+temp<-floor(runif(6, # 試行回数
+                  1, # 出力する乱数の最小値
+                  7) # 出力する乱数の最大値の次の値
+)
+
+# ヒストグラムを作成
+hist(temp,
+     breaks = seq(0, # 下限
+                  6, # 上限
+                  1  # 階級の幅
+     ),
+     freq = TRUE, # 度数を表示
+     col="red"    # 棒の色は赤
+)
+```
+
+```{r}
+# 1～6までの範囲の値を1000回、ランダムに生成する
+# runif()の出力は小数を含むのでfloor()で切り捨てる
+temp<-floor(runif(1000, # 試行回数を1000にする
+                  1, # 出力する乱数の最小値
+                  7) # 出力する乱数の最大値の次の値
+)
+
+# ヒストグラムを作成
+hist(temp,
+     breaks = seq(0, # 下限
+                  6, # 上限
+                  1  # 階級の幅
+     ),
+     freq = FALSE, # 相対度数を表示
+     col="red"     # 棒の色は赤
+)
+```
+```{r}
+# 1～6までの範囲の値を500万回、ランダムに生成する
+# runif()の出力は小数を含むのでfloor()で切り捨てる
+temp<-floor(runif(5000000, # 試行回数を500万にする
+                  1, # 出力する乱数の最小値
+                  7) # 出力する乱数の最大値の次の値
+)
+
+# ヒストグラムを作成
+hist(temp,
+     breaks = seq(0, 6, 1),
+     freq = FALSE, # 相対度数を表示
+     col="red")    # 棒の色は赤
+
+```
+
 ## 「標本平均の平均」をとると母平均にかなり近くなる
 ### 母集団から5個のサンプルをランダムに抽出する
 #### sample()関数によるランダムサンプリング
@@ -694,13 +1270,265 @@ data
 #### 標本平均の分散と標準誤差を確認する
 ### サンプルサイズを大きくすると標準誤差は本当に小さくなるのか
 #### サンプルサイズを5から20にする
+
+```{r}
+# 計測結果.txtをデータフレームに読み込む
+data <- read.table(             
+  "data/計測結果.txt",
+  header=T,            # 1行目は列名であることを指定
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 5個のサンプルの平均を保持するベクトルを用意
+sample_mean <- as.numeric(NULL)    
+
+# 処理を15回繰り返す
+for (i in 1:15){
+  # サンプリングを行う
+  sample <- sample(data$容量,      # 抽出元のデータ
+                   5,              # サンプルサイズ
+                   replace = FALSE # 復元抽出は行わない
+                   )
+  # 標本平均を求めてsample_meanに追加
+  sample_mean <- c(sample_mean, mean(sample))
+}
+
+# 標本平均の平均を求める
+s_mean <- mean(sample_mean)
+# データ全体の平均を求める
+p_mean <- mean(data$容量)
+
+# すべての標本平均をヒストグラムにする
+hist(sample_mean,  # 標本平均
+     freq = FALSE, # 相対度数を表示
+     col="red"     # 棒の色は赤
+     )
+```
+
+```{r}
+# 計測結果.txtをデータフレームに読み込む
+data <- read.table(             
+  "data/計測結果.txt",
+  header=T,            # 1行目は列名であることを指定
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 標本平均を保持するベクトル
+sample_mean <- as.numeric(NULL)
+# 繰り返す回数をベクトルに代入
+rp <- c(1:1000)
+# サンプルサイズをベクトルに代入
+size <- 5
+
+# 処理を1000回繰り返す
+for (i in rp){
+  # サンプリングを行う
+  sample <- sample(data$容量,      # 抽出元のデータ
+                   5,              # サンプルサイズ
+                   replace = FALSE # 復元抽出は行わない
+  )
+  # 標本平均を求めてsample_meanに追加
+  sample_mean <- c(sample_mean, mean(sample))
+}
+
+# 標本平均の平均を求める
+s_mean <- mean(sample_mean)
+# データ全体の平均を求める
+p_mean <- mean(data$容量)
+
+# すべての標本平均をヒストグラムにする
+hist(sample_mean,  # 標本平均
+     freq = FALSE, # 相対度数を表示
+     col="red"     # 棒の色は赤
+)
+
+# 確率密度の近似値をラインで描画
+lines(density(sample_mean))
+
+# 分散を求める関数
+getDisper <- function(x) {                
+  dev <- x - mean(x)             # 偏差を求める
+  return(sum(dev^2) / length(x)) # 分散を返す
+}
+
+# 標準偏差を返す関数
+getSD <- function(x) {
+  # 分散の平方根を返す
+  return(                       
+    sqrt(sum((x - mean(x))^2) / length(x))
+    )
+}
+
+# 標本平均の分散を求める
+sample_mean_disper <- getDisper(sample_mean)
+# 母集団から標本平均の分散を推定
+estimate_disper <- getDisper(data$容量)/size
+# 標本平均の分散から標準誤差を求める
+error_disp <- sqrt(sample_mean_disper)
+# 母集団の標準偏差をサンプルサイズの平方根で割って
+# 標準誤差を求める
+error_sd <-getSD(data$容量)/sqrt(size)
+```
+```{r}
+# 計測結果.txtをデータフレームに読み込む
+data <- read.table(             
+  "data/計測結果.txt",
+  header=T,            # 1行目は列名であることを指定
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 標本平均を保持するベクトル
+sample_mean <- as.numeric(NULL)
+# 繰り返す回数をベクトルに代入
+rp <- c(1:1000)
+# サンプルサイズをベクトルに代入
+size <- 20
+
+# 処理を1000回繰り返す
+for (i in rp){
+  # サンプリングを行う
+  sample <- sample(data$容量,      # 抽出元のデータ
+                   5,              # サンプルサイズ
+                   replace = FALSE # 復元抽出は行わない
+  )
+  # 標本平均を求めてsample_meanに追加
+  sample_mean <- c(sample_mean, mean(sample))
+}
+
+
+
+# すべての標本平均をヒストグラムにする
+hist(sample_mean,  # 標本平均
+     freq = FALSE, # 相対度数を表示
+     col="red"     # 棒の色は赤
+)
+
+# 確率密度の近似値をラインで描画
+lines(density(sample_mean))
+
+# 分散を求める関数
+getDisper <- function(x) {                
+  dev <- x - mean(x)             # 偏差を求める
+  return(sum(dev^2) / length(x)) # 分散を返す
+}
+
+# 標準偏差を返す関数
+getSD <- function(x) {
+  # 分散の平方根を返す
+  return(                       
+    sqrt(sum((x - mean(x))^2) / length(x))
+  )
+}
+
+# 標本平均の分散を求める
+sample_mean_disper <- getDisper(sample_mean)
+# 母集団から標本平均の分散を推定
+estimate_disper <- getDisper(data$容量)/size
+# 標本平均の分散から標準誤差を求める
+error_disp <- sqrt(sample_mean_disper)
+# 母集団の標準偏差をサンプルサイズの平方根で割って
+# 標準誤差を求める
+error_sd <-getSD(data$容量)/sqrt(size)
+
+```
+
 ## データ全体の散らばりと標本平均の散らばり
 ### 標本平均の分散を調べる
 #### 標本平均の分散と母分散の関係を調べる
+
+```{r}
+# 計測結果.txtをデータフレームに読み込む
+data <- read.table(              
+  "data/計測結果.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 標本平均を保持するベクトルを用意
+sample_mean <- as.numeric(NULL)
+
+# 処理を15回繰り返す
+for(i in 1:15){
+  # サンプリングを行う
+  sample   <- sample(
+    data$容量,      # 抽出元のデータ
+    5,              # サンプルサイズ
+    replace = FALSE # 復元抽出は行わない
+  )
+  # 標本平均を求めてsample_meanに追加
+  sample_mean <- c(sample_mean, mean(sample))
+}
+
+# 分散を求める関数
+getDisper <- function(x) {                
+  dev <- x - mean(x)             # 偏差を求める
+  return(sum(dev^2) / length(x)) # 分散を返す
+}
+
+# 標本平均の平均を求める
+s_mean <- mean(sample_mean)
+# 標本平均の分散を求める
+s_var  <- getDisper(sample_mean)
+# 母集団の平均を求める
+p_mean <- mean(data$容量)
+# 母集団の分散を求める
+p_var  <- getDisper(data$容量)
+```
+
 ## 標本分散の平均
 ### 標本分散の代わりに不偏分散を推定値として使う
 #### 標本分散と不偏分散のそれぞれの平均を母分散と比較する
 #### 母集団と標本の関係のまとめ
+
+```{r}
+# 計測結果.txtをデータフレームに読み込む
+data <- read.table(
+  "data/計測結果.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 分散を求める関数
+getDisper <- function(x) {                
+  dev <- x - mean(x)             # 偏差を求める
+  return(sum(dev^2) / length(x)) # 分散を返す
+}
+
+# 標本平均を保持するベクトル
+sample_mean <- as.numeric(NULL)
+# 標本分散を格納するベクトル
+sample_disper <- as.numeric(NULL)
+# 標本の不偏分散を格納するベクトル
+sample_undisper <- as.numeric(NULL)
+
+# 処理を15回繰り返す
+for(i in 1:15){
+  # サンプリングを行う
+  sample <- sample(
+    data$容量,      # 抽出元のデータ
+    10,             # サンプルサイズ
+    replace = FALSE # 復元抽出は行わない
+  )
+  # サンプルの平均をベクトルに追加
+  sample_mean  <- c(sample_mean, mean(sample))
+  # 標本分散をベクトルに追加
+  sample_disper  <- c(sample_disper, getDisper(sample))
+  # 標本の不偏分散をベクトルに追加
+  sample_undisper <- c(sample_undisper, var(sample))
+}
+
+# 標本平均の平均
+ps_mean_mean <- mean(sample_mean)
+# 標本分散の平均
+s_disper_mean <- mean(sample_disper)
+# 標本の不偏分散の平均
+s_undisper_mean <- mean(sample_undisper)
+# 母集団の平均
+p_mean <- mean(data$容量)
+# 母集団の分散
+p_disper <- getDisper(data$容量)
+```
+
 
 # 手持ちのデータで全体を知る（標本と母集団）
 ## 大標本を使って全体の平均を予測する（z値を用いた区間推定）
@@ -712,12 +1540,113 @@ data
 #### 大標本（サンプルサイズ30以上）の信頼区間
 #### 母平均の信頼区間の関係式を導く
 #### サンプルサイズ50で母平均を区間推定する
+
+```{r}
+# 計測結果.txtをデータフレームに読み込む
+data <- read.table(
+  "data/計測結果.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 分散を求める関数
+getDisper <- function(x) {                
+  dev <- x - mean(x)             # 偏差を求める
+  return(sum(dev^2) / length(x)) # 分散を返す
+}
+
+# 標本平均を保持するベクトル
+sample_mean <- as.numeric(NULL)
+# 標本分散を格納するベクトル
+sample_disper <- as.numeric(NULL)
+# 標本の不偏分散を格納するベクトル
+sample_undisper <- as.numeric(NULL)
+
+# 処理を15回繰り返す
+for(i in 1:15){
+  # サンプリングを行う
+  sample <- sample(
+    data$容量,      # 抽出元のデータ
+    10,             # サンプルサイズ
+    replace = FALSE # 復元抽出は行わない
+  )
+  # サンプルの平均をベクトルに追加
+  sample_mean  <- c(sample_mean, mean(sample))
+  # 標本分散をベクトルに追加
+  sample_disper  <- c(sample_disper, getDisper(sample))
+  # 標本の不偏分散をベクトルに追加
+  sample_undisper <- c(sample_undisper, var(sample))
+}
+
+# 標本平均の平均
+ps_mean_mean <- mean(sample_mean)
+# 標本分散の平均
+s_disper_mean <- mean(sample_disper)
+# 標本の不偏分散の平均
+s_undisper_mean <- mean(sample_undisper)
+# 母集団の平均
+p_mean <- mean(data$容量)
+# 母集団の分散
+p_disper <- getDisper(data$容量)
+```
+
+```{r}
+# 容量検査.txtをデータフレームに格納
+data <- read.table(
+  "data/容量検査.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+# 信頼度を99%に設定
+prob <- 0.99
+# z値を求める
+z  <- abs(qnorm((1 - prob) / 2))
+# サンプルサイズを求める
+n  <- length(data$容量)
+# 標本平均を求める
+m  <- mean(data$容量)
+# 標本標準偏差を求める
+sd <- sd(data$容量)
+# 下側境界値
+border_low <- m - z*(sd/sqrt(n))
+# 上側境界値
+border_upp <- m + z*(sd/sqrt(n))
+```
+
 ## 小標本を使って全体の平均を予測する（t値を用いた区間推定）
 ### 小標本による平均値の推定
 #### 小標本の平均と分散を用いて母平均の信頼区間を求める
 #### Onepoint 自由度
 ### 信頼度95％で母平均を区間推定する
 #### 小標本による区間推定の結果
+
+```{r}
+# 容量検査10.txtをデータフレームに格納
+data <- read.table(                  
+  "data/容量検査10.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 信頼度を設定
+prob <- 0.95
+# サンプルサイズを求める
+n <- length(data$容量)
+# 標本平均を求める
+m <- mean(data$容量)
+# 標本の不偏分散を求める
+vr <- var(data$容量) 
+
+# t(α/2, n-1)の絶対値を求める
+t <- abs(qt((1 - prob)/2, # α/2を求める
+            n - 1)        # サンプルサイズ - 1
+         )
+# 下限信頼限界
+border_low <- m - t*sqrt(vr/n)
+# 上限信頼限界
+border_upp <- m + t*sqrt(vr/n)
+```
+
 ## 母集団のデータの比率を区間推定する
 ### 二項分布の確率理論を用いて母集団の割合を推定する
 #### 離散型の代表的かつ重要な確率分布である「二項分布」
@@ -728,6 +1657,22 @@ data
 #### 支持率45％と47％に「差はある」のか
 ### Hint 自由度が30を超えると標準正規分布とほぼ同じになる{-}
 ### Memo 階乗{-}
+
+```{r}
+# 信頼度
+prob <- 0.95
+# z値を求める
+z <- abs(qnorm((1 - prob)/2))
+# 比率
+p <- 0.45  
+# 母集団のサイズ
+n <- 1000
+# 下限信頼限界
+border_low <- p - z*sqrt(p*(1 - p)/n)
+# 上限信頼限界
+border_upp <- p + z*sqrt(p*(1 - p)/n)
+```
+
 
 # 独立性の検定と2つの平均の比較（χ2検定、t検定）
 ## 2つのデータの独立性の検定（カイ二乗検定）
@@ -743,6 +1688,88 @@ data
 ### A店とB店のデータ分布は同じかどうかを判断する
 #### 「差はない」という帰無仮説を立ててχ2検定を実施
 #### A店とB店の売上に差はあるのか
+
+```{r}
+# A店B店.txtをデータフレームに格納
+data <- read.table(                      
+  "data/A店B店.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# A店の注文数の合計
+A_sum     <- data[1,3]
+# B店の注文数の合計
+B_sum     <- data[2,3]
+# A店とB店の注文数の合計
+AB_sum    <- data[3,3]                   
+# メインメニューの注文数の合計
+menu1_sum <- data[3,1]
+# セカンドメニューの注文数の合計
+menu2_sum <- data[3,2]
+# 店舗ごとの注文数をベクトルに格納
+menu_sales <- c(data[1,1], # A店のメインメニューの注文数
+                data[1,2], # A店のセカンドメニューの注文数
+                data[2,1], # B店のメインメニューの注文数
+                data[2,2]) # B店のセカンドメニューの注文数
+
+# A店のメインメニューの期待値
+exp_A_m1  <- menu1_sum * A_sum / AB_sum
+# A店のセカンドメニューの期待値
+exp_A_m2  <- menu2_sum * A_sum / AB_sum 
+# B店のメインメニューの期待値
+exp_B_m1  <- menu1_sum * B_sum / AB_sum
+# B店のセカンドメニューの期待値
+exp_B_m2  <- menu2_sum * B_sum / AB_sum
+
+
+# すべての期待値をベクトルに格納
+exp_freq <- c(exp_A_m1, exp_A_m2, exp_B_m1, exp_B_m2)
+
+# それぞれの売上について「(観測度数-期待値)の2乗÷期待値」を求める
+t_element <- (menu_sales - exp_freq) ^2/exp_freq
+# 検定統計量を求める
+val_t <- sum(t_element)
+# 自由度1、有意水準5％のχ2値を求める 
+val_chi <- qchisq(0.05, # 有意水準
+                  1,    # 自由度
+                  lower.tail=FALSE) # 上側確率のχ2値
+
+# 自由度1のカイ二乗分布のグラフを描く
+curve(dchisq(x, 1), 0, 6)
+abline(v=qchisq(0.05, 1,lower.tail=FALSE))
+
+```
+
+```{r}
+# サイコロ.txtをデータフレームに格納
+data <- read.table(
+  "data/サイコロ.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 観測度数をベクトルに格納
+freq <- c(
+  data[1,2], # 1の目の観測度数
+  data[2,2], # 2の目の観測度数
+  data[3,2], # 3の目の観測度数
+  data[4,2], # 4の目の観測度数
+  data[5,2], # 5の目の観測度数
+  data[6,2]) # 6の目の観測度数
+
+# それぞれの観測度数について「(観測度数-期待値)の2乗÷期待値」を求める
+element <- (freq - 2)^2/2
+# 検定統計量を求める
+elm_val <- sum(element)
+# 有意水準5％のΧ2値(棄却域)を求める 
+chi_val <- qchisq(0.05,            # 有意水準5%
+                  5,               # 自由度
+                  lower.tail=FALSE # 上側確率を求める
+                  )
+```
+
+
 ## 独立した2群の差のt検定①
 #### （分散が等質と仮定できる場合のt検定）
 ### 独立した2群における3つのt検定
@@ -754,12 +1781,90 @@ data
 #### ライバル店の平均点との差はあるのか
 #### 　p値を求めてt検定を行う
 #### 　t.test()関数で検定統計量tを求める
+
+```{r}
+# 採点.txtをデータフレームに格納
+data <- read.delim(
+  "data/採点.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 主力メニューの点数をベクトルに代入
+menu1 <- data$当店
+# 欠損値を除いてライバル店の点数をベクトルに代入
+menu2 <- data$ライバル店[!is.na(data$ライバル店)]
+# 主力メニューの平均点
+mean_m1 <- mean(menu1)
+# ライバル店の平均点
+mean_m2 <- mean(menu2)
+
+# 母分散を推定する
+p_variance <- sqrt(
+  # (主力メニューの不偏分散×(サイズ－1))
+  #    + (ライバル店の標本分散×(サイズ－1))
+  ((length(menu1) - 1)*var(menu1) + (length(menu2) - 1)*var(menu2))
+  # サンプルサイズの合計－2で割る
+  /(length(menu1) + length(menu2) - 2)
+  )
+
+# 検定統計量tの分母の計算
+dn <- p_variance*sqrt(1/length(menu1) + 1/length(menu2))
+# 検定統計量tを求める
+t <- (mean_m1 - mean_m2)/dn
+
+# 自由度を求める
+dof <- length(menu1) + length(menu2) - 2
+
+# 自由度を指定して下限信頼限界0.025のt値を求める
+t_low <- qt(0.025, dof)
+
+# 自由度を指定して上限信頼限界0.025のt値を求める
+t_upp <- qt(0.025, dof, lower.tail=FALSE)
+
+# 自由度(18-2＝16)のt分布のグラフを描く
+curve(dt(x, dof), -3, 3)
+# 下側確率0.025のt値のところにラインを引く
+abline(v=qt(0.025, dof))
+# 上側確率0.975のt値のところにラインを引く
+abline(v=qt(0.975, dof))
+
+# 両側検定におけるp値を求める
+p <- 2*pt(t, dof)
+
+# t.test()でスチューデントのt検定を実施
+t.test(menu1, menu2, var.equal = TRUE)
+```
+
+
 ## 独立した2群の差のt検定②
 #### （分散が等しいと仮定できない場合のウェルチのt検定）
 ### ウェルチのt検定で、母分散が等しくない2群の平均を検定する
 #### 独立した2群の分散が等しいことを前提にしないウェルチのt検定
 ### ウェルチのt検定を実施する
 ### Hint t検定のデフォルトはウェルチのt検定{-}
+
+```{r}
+# 満足度調査.txtをデータフレームに格納
+data <- read.delim(                      
+  "data/満足度調査.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# A店の点数をベクトルに格納
+a <- data$A店
+# B店の点数を欠損値を除いてからベクトルに格納
+b <- data$B店[!is.na(data$B店)]
+# サマリを出力
+summary(a)
+summary(b)
+
+# A店、B店のデータでウェルチのt検定を実施
+t.test(a, b)
+```
+
+
 ## 対応のある2群の差のt検定
 ### 対応のある2群の差のt検定は変化量（変量の差）の平均値の検定になる
 #### 検定統計量tの式
@@ -768,6 +1873,61 @@ data
 #### 平均体重の変化に統計的な差は認められるのか
 #### p値を求めてt検定を行う
 #### t.test()関数で検定統計量tの実現値を求める
+
+```{r}
+# 体重の変化.txtをデータフレームに格納
+data <- read.delim(
+  "data/体重の変化.txt",
+  header=TRUE,         # 1行目は列名であることを指定
+  fileEncoding="UTF-8" # 文字コードをShift_JISに指定
+)
+# 摂取前の体重をベクトルに格納
+before <- data$摂取前
+# 摂取後の体重をベクトルに格納
+after <- data$摂取後      
+# 摂取前の体重の平均
+mean_m1 <- mean(before)
+# 摂取後の体重の平均
+mean_m2 <- mean(after)    
+# 接種後と摂取前の体重の差(変化量)を求める
+change <- after - before  
+
+# 検定統計量の分母の計算
+denom <- sd(change)/sqrt(length(change))
+# 検定統計量の分子の計算
+numer <- mean(change)
+# 検定統計量を求める
+t <- numer / denom
+# 自由度(n-1)を求める
+dof <- length(change) - 1 
+
+# 自由度dofのt分布における下側確率0.025の下限信頼限界を求める
+t_low <- qt(0.025, dof)
+# 自由度dofのt分布における上側確率0.025の上限信頼限界を求める
+t_upp <- qt(0.025, dof, lower.tail=FALSE)
+
+# 自由度(n-1)のt分布のグラフを描く
+curve(dt(x, dof), -3, 3)
+
+# 下側確率0.025のt値のところにラインを引く
+abline(v=qt(0.025, dof))
+# 上側確率0.975のt値のところにラインを引く
+abline(v=qt(0.975, dof))
+
+# 両側検定におけるp値を求める
+p <- 2*pt(t, dof)
+
+# 変化量を引数にしてt.test()を実行
+t.test(change)
+
+# 接種後のデータと摂取前のデータを指定してt.test()を実行
+t.test(after, # 接種後のデータ
+  before,     # 摂取前のデータ
+  paired=TRUE # 対応ありを指定
+  )
+```
+
+
 ### Memo RStudioの［Packages］ビュー {-}
 
 # 3つの平均値が同じ土俵で比較できるか調べる（t検定が使えない場合の分散分析）
@@ -788,12 +1948,221 @@ data
 #### 標本平均間のズレと標本内部のデータのズレを見る
 ### 多重比較（Tukeyの方法）
 #### RのTukeyHSD()関数で多重比較を行ってみる
+
+```{r}
+# 模試結果.txtをデータフレームに格納
+data <- read.delim(
+  "data/模試結果.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの各列のデータをベクトルに代入
+variate <- c(data[,1], # 直前対策講座Aのデータ
+             data[,2], # 直前対策講座Bのデータ
+             data[,3]) # 直前対策講座Cのデータ
+
+# 各列のサイズを取得
+col_1 <- length(data[,1])
+col_2 <- length(data[,2])
+col_3 <- length(data[,3])
+
+# 列名を列データの数だけ格納したベクトルをfactor型に変換
+fact <- factor(
+  c(rep(colnames(data)[1], col_1), # "直前対策講座A"×20
+    rep(colnames(data)[2], col_2), # "直前対策講座B"×20
+    rep(colnames(data)[3], col_3)) # "直前対策講座C"×20
+  )
+
+# oneway.test()で1要因の分散分析(対応なし)を実施
+oneway.test(
+  variate~fact,   # variateにfactを対応付けるモデル式
+  var.equal=TRUE # 分散には等質性あると仮定
+  )
+
+# aov()を実行
+aov(variate~fact)
+
+# summary()関数の引数にaov()関数の実行結果を指定
+summary(aov(variate~fact))
+
+# anova()を実行
+anova(lm(variate~fact))
+
+# Tukeyの方法で多重比較を行う
+TukeyHSD(aov(variate~fact))
+```
+
+```{r}
+# 模試結果.txtをデータフレームに格納
+data <- read.delim(
+  "data/模試結果.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 分散を返す関数
+getDisper <- function(x) {       
+  dev <- x - mean(x) 
+  return(sum(dev^2) / length(x))
+}
+
+# データフレームの各列のデータをベクトルに代入
+variate <- c(data[,1], # 直前対策講座Aのデータ
+             data[,2], # 直前対策講座Bのデータ
+             data[,3]) # 直前対策講座Cのデータ
+
+# 各列のサイズを取得
+col_1 <- length(data[,1])
+col_2 <- length(data[,2])
+col_3 <- length(data[,3])
+
+# 3群それぞれの平均を求める
+m_A <- mean(data[,1])
+m_B <- mean(data[,2])
+m_C <- mean(data[,3])
+# 3群の平均を求める
+m_all <- mean(variate)
+
+# 群間の平方和を求める
+cohort_s_sum <- sum((m_A - m_all)^2*col_1,
+                    (m_B - m_all)^2*col_2,
+                    (m_C - m_all)^2*col_3)
+
+# 群内の平方和を求める
+cohort_in_s_sum <- sum(getDisper(data[,1])*col_1,
+                       getDisper(data[,2])*col_2,
+                       getDisper(data[,3])*col_3)
+
+# 群間の不偏分散
+cohort_unbiased <- cohort_s_sum/(length(data[1,]) - 1)
+
+# 群内の不偏分散
+cohort_in_unbiased <- cohort_in_s_sum/((col_1-1) + (col_2-1) + (col_3-1))
+
+# 検定統計量F
+f <- cohort_unbiased/cohort_in_unbiased
+```
+
+```{r}
+curve(df(x, 6, 18), 0, 5)
+```
+
+
 ## 1要因の分散分析②（対応あり）
 ### 対応がある1要因の分散分析の実施
 #### 分散分析の実施
 ### 対応ありとなしで違いが出たのはなぜ？
 #### 対応なしと対応ありによる違いを見る
 #### 平方和を分解して自由度を計算してみよう
+
+```{r}
+# 同一の受講生による模試結果.txtをデータフレームに格納
+data <- read.delim(
+  "data/同一の受講生による模試結果.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの各列のデータをベクトルに代入
+variate <- c(data[,2], # 直前対策講座Aのデータ
+             data[,3], # 直前対策講座Bのデータ
+             data[,4]) # 直前対策講座Cのデータ
+
+# 各列のサイズを取得
+col_1 <- length(data[,2])
+col_2 <- length(data[,3])
+col_3 <- length(data[,4])
+
+# 列名を列データの数だけ格納したベクトルをfactor型に変換
+fact <- factor(
+  c(rep(colnames(data)[2], col_1), # "直前対策講座A"×20
+    rep(colnames(data)[3], col_2), # "直前対策講座B"×20
+    rep(colnames(data)[4], col_3)) # "直前対策講座C"×20
+  )
+
+# 20人を識別するA～Tを3個作成し、factor型に変換
+id <- factor(rep(data[,1], # A～Tが入力されている列
+                 length(data[1,]) - 1) # 列数4から1を引く
+             )
+
+# aov()をsummary()の引数にして実行
+# fact+Noで各講座受講後の得点を受講者に対応付ける
+summary(
+  aov(variate~fact+id))
+
+# ---------------------------------------------------
+# 平方和の分解
+# ---------------------------------------------------
+
+# 3講座受講後の得点を(20,3)の行列にする
+all <- matrix(variate, nrow=20, ncol=3)
+# 講座ごとの平均点を求める
+point_mean <- colMeans(all)
+# 受講者ごとに３講座の平均点を求める
+person_mean <- rowMeans(all)
+# ３講座受講後のすべての得点について平均点を求める
+all_mean <- mean(all)
+# 出力
+all
+point_mean
+person_mean
+all_mean
+
+# 全体の平均点を(20,3)の行列にする
+all_mean_matrix <- matrix(
+  rep(all_mean, 60), nrow = 20, ncol = 3)
+# 講座ごとの平均点を(20,3)の行列にする
+point_mean_matrix <- matrix(
+  rep(point_mean, 20), nrow = 20, ncol = 3, byrow = TRUE)
+# 受講者の3講座の平均点を(20,3)の行列にする
+person_mean_matrix <- matrix(
+  rep(person_mean, 3), nrow = 20, ncol = 3)
+# 出力
+all_mean_matrix
+point_mean_matrix
+person_mean_matrix
+
+# すべての得点について偏差を求める
+all_dev <- all - all_mean_matrix
+# 出力
+all_dev
+
+# 条件として模擬試験ごとの効果を求める
+terms <- point_mean_matrix - all_mean_matrix
+# 出力
+terms
+
+# 受講者の平均点から講座ごとの平均点を引いて
+# 受講者ごとの効果を求める
+person <- person_mean_matrix - all_mean_matrix
+# 出力
+person
+
+# 残差を求める
+residual <- all - all_mean_matrix - terms - person
+# 出力
+residual
+
+# すべての得点について偏差の平方和を求める
+all_square_sum <- sum(all_dev^2)
+# 模擬試験ごとの効果の平方和を求める
+terms_square_sum <- sum(terms^2)
+# 受講者ごとの効果の平方和を求める
+person_square_sum <- sum(person^2)
+# 残差の平方和を求める
+residual_square_sum <- sum(residual^2)
+
+# 出力
+all_square_sum
+terms_square_sum
+person_square_sum
+residual_square_sum
+
+# 模擬試験ごとの効果の平方和+受講者ごとの効果の平方和+残差の平方和
+terms_square_sum + person_square_sum + residual_square_sum
+```
+
 ## 2要因の分散分析①（2要因とも対応なし）
 ### 主効果と交互に作用する効果
 #### 主効果と交互作用効果について
@@ -801,14 +2170,182 @@ data
 #### 2要因の分散分析（対応なし）の実施
 #### 帰無仮説の棄却／採択の決定
 #### 交互作用効果を確認する
+
+```{r}
+# 学習効果.txtをデータフレームに格納
+data <- read.delim(
+  "data/学習効果.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの各列のデータを1つのベクトルに格納
+variate <- c(data[,1], # 1列目のデータ
+             data[,2], # 2列目のデータ
+             data[,3], # 3列目のデータ
+             data[,4], # 4列目のデータ
+             data[,5], # 5列目のデータ
+             data[,6]) # 6列目のデータ
+
+
+# 1要因あたりのデータ数(15)を取得
+size <- length(data[,1])*length(colnames(data))/2
+# 1列あたりのデータ数(5)を取得
+size_col <- length(data[,1])
+
+# 1つ目の要因の水準(朝と夜)を識別子fac_A_1、fac_A_2
+# として、それぞれデータの数(15)だけ作成
+fac1 <- factor(
+  c(rep("fac_A_1", size), # 1つ目の要因の水準
+    rep("fac_A_2", size)) # 2つ目の要因の水準
+  )
+
+# 2つ目の要因の水準(英、漢字、古文)を識別子fac_B_1、fac_B_2、fac_B_3
+# として行データの数×2セット(朝と夜)作成
+fac2 <- factor(
+  rep(                          # 以下を2セット作成
+    c(rep("fac_B_1", size_col), # 「英単語」の識別子×行データの数
+      rep("fac_B_2", size_col), # 「漢字」の識別子×行データの数
+      rep("fac_B_3", size_col)) # 「古文」の識別子×行データの数
+    ,2)
+  )
+
+# aov()関数を実行して分散分析表を出力
+summary(
+  aov(variate ~ fac1*fac2))
+
+# 「学習する時間」「学習内容」のそれぞれの水準を組み合わせたグラフを出力
+interaction.plot(fac1, fac2, variate)
+interaction.plot(fac2, fac1, variate)
+```
+
+
 ## 2要因の分散分析②（2要因とも対応あり）
 ### 2要因の分散分析（対応あり）を実施する
 #### 2要因の分散分析（対応あり）の実施
 #### Onepoint 2要因の分散分析（対応あり）を行ったあとは
+
+```{r}
+# 学習効果.txtをデータフレームに格納
+data <- read.delim(             
+  "data/学習効果2.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの被験者以外の列データをベクトルに格納
+variate <- c(data[,2],
+             data[,3],
+             data[,4],
+             data[,5],
+             data[,6],
+             data[,7]
+             )
+
+# 1要因に含まれるデータ数を取得
+size <- length(data[,1])*(length(colnames(data)) - 1)/2
+# 1列あたりのデータ数を取得
+size_col <- length(data[,1])
+# 条件の数を取得(被験者の列を除く)
+size_row <- length(colnames(data)) - 1
+
+# 1つ目の要因の水準(朝と夜)を識別子fac_A_1、fac_A_2として、
+# それぞれデータの数(15)だけ作成
+fac1 <- factor(
+  c(rep("fac_A_1", size), # 1つ目の要因の水準
+    rep("fac_A_2", size)) # 2つ目の要因の水準
+  )
+
+# 2つ目の要因の水準(英、漢字、古文)を識別子を
+# 行データの数×2セット(朝と夜)作成
+fac2 <- factor(
+  rep(                          # 以下を2セット作成
+    c(rep("fac_B_1", size_col), # 「英単語」の識別子×行データの数
+      rep("fac_B_2", size_col), # 「漢字」の識別子×行データの数
+      rep("fac_B_3", size_col)) # 「古文」の識別子×行データの数
+    ,2))
+
+# 5名の被験者の識別子を要因の数(6)だけ作成
+fac3 <- factor(
+  rep(c("fac_C_1",  # 1人目
+        "fac_C_2",  # 2人目
+        "fac_C_3",  # 3人目
+        "fac_C_4",  # 4人目
+        "fac_C_5")  # 5人目
+      ,6))
+
+# aov()関数を実行して分散分析表を出力
+summary(
+  aov(variate ~ fac1*fac2 + Error(fac3 +
+                                  fac3 : fac1 + 
+                                  fac3 : fac2 +
+                                  fac1 : fac2 : fac3)))
+```
+
+
 ## 2要因の分散分析③（1要因のみ対応あり）
 ### 2要因の分散分析（1要因のみ対応あり）を実施する
 #### 2要因の分散分析（1要因のみ対応あり）の実施
 #### 帰無仮説の棄却／採択の決定
+
+```{r}
+# 学習効果_1要因のみ対応.txtをデータフレームに格納
+data <- read.delim(             
+  "data/学習効果_1要因のみ対応.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームのデータの列のみをベクトルに格納
+variate <- c(
+  data[,2],  # 2列目
+  data[,3],  # 3列目
+  data[,4],  # 4列目
+  data[,6],  # 6列目
+  data[,7],  # 7列目
+  data[,8])  # 8列目
+
+
+# 1要因に含まれるデータの数を取得
+size <- length(data[,1]) * (length(colnames(data)) - 2)/2
+# 1列あたりのデータ数を取得
+size_col <- length(data[,1])
+# 条件の数を取得(被験者の2列を除く)
+size_row <- length(colnames(data)) - 2
+
+# 1つ目の要因の水準(朝と夜)を識別子fac_A_1、fac_A_2として、
+# それぞれデータの数(15)だけ作成
+fac1 <- factor(
+  c(rep("fac_A_1", size), # 1つ目の要因の水準
+    rep("fac_A_2", size)) # 2つ目の要因の水準
+)
+
+# 2つ目の要因の水準(英、漢字、古文)を識別子を
+# 行データの数×2セット(朝と夜)作成
+fac2 <- factor(
+  rep(                          # 以下を2セット作成
+    c(rep("fac_B_1", size_col), # 「英単語」の識別子×行データの数
+      rep("fac_B_2", size_col), # 「漢字」の識別子×行データの数
+      rep("fac_B_3", size_col)) # 「古文」の識別子×行データの数
+    ,2))
+
+# 朝の被験者と夜の被験者の識別子を作成
+fac3 <- factor(
+  c(
+    # 朝学習した5人を分類する識別子1～5を水準の数(3)だけ作成
+    rep(1:size_col, size_row/2),
+    # 夜学習した5人を分類する識別子6～10を水準の数(3)だけ作成
+    rep(size_row:(size_col*2), size_row/2)
+  )
+)
+
+# aov()関数を実行して分散分析表を出力
+summary(
+  aov(variate ~ fac1*fac2 + Error(fac3 : fac1 + 
+                                  fac3 : fac1 : fac2)))
+
+```
+
 ### Hint 帰無仮説と対立仮説 {-}
 
 # 回帰分析で未来を知る（単回帰分析と重回帰分析）
@@ -828,6 +2365,57 @@ data
 ### 最高気温が1℃上昇したときの売上数を予測する
 #### 回帰直線を散布図上に表示してみる
 #### 最高気温が30℃、31℃、さらに36℃のときの売上数を予測する
+
+```{r}
+# 清涼飲料水売上.txtをデータフレームに格納
+data <- read.delim(
+  file="data/清涼飲料水売上.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# 散布図を描く
+plot(data)                   
+
+# 相関係数を求める
+cor(data["最高気温"], data["清涼飲料売上数"])
+
+# 線形単回帰分析を実行
+result <- lm("清涼飲料売上数 ~ 最高気温", data=data)
+# 分析結果を出力
+summary(result)
+
+# 分析結果から定数項と回帰係数のみを出力する
+round(
+  coefficients(result), 2) # 小数点以下2桁で丸める
+
+# 散布図を描画して回帰直線を引く
+plot(data)
+abline(result)
+
+# 最高気温が30度のときの売上数を予測する
+-760.877 + 33.741*30
+
+# 最高気温が31度のときの売上数を予測する
+-760.877 + 33.741*31
+
+# 最高気温が36度のときの売上数を予測する
+-760.877 + 33.741*36
+
+# 予測に用いる最高気温をデータフレームに格納
+test <- data.frame(
+  "最高気温" = c(30, 31, 36)
+)
+
+# 分析結果(モデル)を用いて予測する
+predict(result, newdata =test)
+
+# もとのデータと予測値、残差を一覧にする
+exp <- fitted(result)              # 元データに対する予測値
+res <- residuals(result)           # データと予測値の残差
+view <- data.frame(data, exp, res) # データフレームにまとめる
+```
+
 ### Memo 回帰分析の手法 {-}
 ### Memo 内挿と外挿 {-}
 ### Tips 分析の元データと予測値、残差を一覧で表示する {-}
@@ -847,6 +2435,122 @@ data
 ### 説明変数を減らさずに変数の交互作用だけを減らして分析する
 #### 交互作用を考慮した回帰係数を求める
 #### step()関数でAICが最も低い組み合わせを調べる
+
+```{r}
+# 売上高と各種要因.txtをデータフレームに格納
+data <- read.delim(
+  "data/売上高と各種要因.txt",
+  header=TRUE,         # 1行目は列名
+  row.names=1,         # 1列目は行名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# すべてのデータ(説明変数)について相関係数を求める
+coef <- cor(data)
+
+# 線形重回帰分析を実行
+model <- lm(
+  "売上高 ~ 駅からの距離 + 競合店 + 店舗面積 + サービス満足度 + 商品の充実度",
+  data=data)
+# 分析結果を表示
+summary(model)
+# 係数を表示
+round(coefficients(model), 3) 
+
+# 分析に使用したデータの予測値を取得
+exp <- fitted(model)
+# 実際の売上高と予測値との誤差を取得
+res <- round(residuals(model), 3)
+# 実際の売上高と予測値、誤差をデータフレームにまとめる
+view <- data.frame(data[1], exp, res)
+
+#########################################
+# 説明変数を絞り込んだ重回帰分析
+#########################################
+# 説明変数を減らしたAIC値を求める
+step(model)
+
+# 不要な説明変数を除いて線形重単回帰分析を実行
+model_2 <- lm("売上高 ~ 競合店 + サービス満足度 + 商品の充実度",
+              data=data)
+# 分析結果(モデルのサマリ)を出力
+summary(model_2)
+# 係数を表示
+round(coefficients(model_2), 3)
+
+# 分析に使用したデータの予測値を取得
+exp <- fitted(model_2)
+# 実際の売上高と予測値との誤差を取得
+res <- residuals(model_2)
+# 実際の売上高と予測値、誤差をデータフレームにまとめる
+view_2 <- data.frame(data[1], exp, res)
+
+#########################################
+# 交互作用を考慮した重回帰分析
+#########################################
+# データフレームの各列をベクトルに代入
+amount <- c(data[,1])       # "売上高"
+distance <- c(data[,2])     # "駅からの距離"
+competitors <- c(data[,3])  # "競合店"
+area <- c(data[,4])         # "店舗面積"
+satisfaction <- c(data[,5]) # "サービス満足度"
+fulfillment <- c(data[,6])  # "商品の充実度"
+
+# 相互作用を考慮した重回帰分析を実行
+model_3  <- lm(
+  amount ~ (distance + competitors + area + satisfaction + fulfillment) ^2,
+  data=data)
+# モデルのサマリを出力
+summary(model_3)
+
+#########################################
+#最適な交互作用を用いた重回帰分析
+#########################################
+
+# 相互作用を1つずつ外してAIC値を求める
+step(model_3)
+
+# 相互作用を考慮した重回帰分析を実行
+model_3  <- lm(
+  amount ~ distance + competitors + area + satisfaction + fulfillment + 
+    distance:area + distance:fulfillment + competitors:area + 
+    area:satisfaction + satisfaction:fulfillment,
+  data=data)
+# モデルのサマリを出力
+summary(model_3)
+
+# 分析に使用したデータの予測値を取得
+exp <- fitted(model_3)
+# 実際の売上高と予測値との誤差を取得
+res <- residuals(model_3)
+# 実際の売上高と予測値、誤差をデータフレームにまとめる
+view_3 <- data.frame(data[1], exp, res)
+
+# 係数を表示
+round(coefficients(model_3), 2)
+
+# 説明変数に値を代入
+dista <- 0.1
+compe <- 0
+are <- 300
+satis <- 4
+ful <- 4
+
+# 回帰モデルで予測する
+- 42856.68 + 
+  8566.82  * dista -       # 駅からの距離
+  7240.91  * compe +       # 競合店
+  73.71    * are +         # 面積
+  11490.02 * satis +       # サービス満足度
+  7600.81  * ful -         # 商品の充実度
+  21.45    * dista * are - # 駅からの距離×面積
+  805.99   * dista * ful + # 駅からの距離×商品の充実度
+  23.56    * compe * are - # 競合店×面積
+  17.90    * are * satis - # 面積×サービス満足度
+  1575.55  * satis * ful   # サービス満足度×商品の充実度
+```
+
+
 ## 急激に上昇カーブを描く普及率を予測する（非線形回帰分析）
 ### ロジスティック関数を使って非線形回帰分析をする
 #### 非線形の回帰分析をロジスティック回帰で行う
@@ -863,10 +2567,212 @@ data
 ### 一般化線形モデルの回帰分析
 #### 今回のケースで線形回帰分析をするとどうなる？
 #### glm()関数で一般化線形モデルの回帰分析を行う
+
+```{r}
+# 普及率.txtをデータフレームに格納
+data <- read.delim(                
+  "data/普及率.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの各列のデータをベクトルに格納
+year <- c(data[,1]) # 年度
+pene <- c(data[,2]) # 普及率
+
+# ロジスティック回帰分析を行う
+# family=binomialでロジット関数を指定
+model <- glm(pene~year,
+             family=binomial)
+
+# 実測値の散布図を描く
+plot(year, pene, 
+     type="l") # ラインで描画
+
+# 予測値を曲線で描画する
+lines(year,          # x座標は年代
+      fitted(model), # y座標は予測値
+      lty=2,         # 点線で描画
+      col="red",     # 色を赤にする
+      lwd=2)         # 点線の太さ
+
+# 実測値と予測値をデータフレームに結合
+predict <- cbind(data,                 
+             fitted(model))
+```
+
+```{r}
+# 普及率.txtをデータフレームに格納
+data <- read.delim(                
+  "data/普及率.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの各列のデータをベクトルに格納
+year <- c(data[,1]) # 年度
+pene <- c(data[,2]) # 普及率
+
+# 散布図を描く
+plot(data, col="red")
+
+# 非線形回帰分析を実行
+model <- nls(
+  pene ~ K/(1 + b*exp(c*year)), # モデル式
+  start=c(K=1, b=1, c=-1),      # 係数の初期値を設定
+  trace=TRUE                    # 計算過程を出力
+  )
+
+# 年度を1～19にする
+year <-(1:19)
+
+# 非線形回帰分析を実行
+model <- nls(
+  pene ~ K/(1 + b*exp(c*year)), # モデル式
+  start=c(K=1, b=1, c=-1),      # 係数の初期値を設定
+  trace=TRUE                    # 計算過程を出力
+)
+# モデルのサマリを出力
+summary(model)
+
+# 係数を取得
+coef <- coefficients(model)
+
+# 係数を取り出す
+K <- as.vector(coef[1]) # aの値
+b <- as.vector(coef[2]) # bの値
+c <- as.vector(coef[3]) # cの値
+x <- 10                 # xの値
+
+# ロジスティック関数で予測する
+K/(1 + b*exp(c*x))
+
+# 予測値を結合したデータフレームを作成
+predict <- cbind(data,
+                 fitted(model))
+
+# 実測値の散布図を作成
+plot(year, pene, cex=1)
+# 予測値の曲線を描画する
+lines(year,          # x座標は年代
+      fitted(model), # y座標は予測値
+      col="RED",     # 赤にする
+      lty="dotted",  # ドットで描画
+      lwd=2)         # 太さは2
+```
+
+```{r}
+# 普及率.txtをデータフレームに格納
+data <- read.delim(                
+  "data/普及率.txt",
+  header=TRUE,         # 1行目は列名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの各列のデータをベクトルに格納
+year <- c(data[,1]) # 年度
+pene <- c(data[,2]) # 普及率
+
+# SSlogis()をモデル式に使用して非線形回帰分析
+model_ss <- nls(
+  pene ~ SSlogis(year, Asym, xmid, scal)
+)
+# 分析結果を表示
+summary(model_ss)
+
+# 予測値を結合したデータフレームを作成
+predict_ss <- cbind(data,
+                    fitted(model_ss))
+```
+
+* `sigmoid.R`
+
+```{r}
+x <- seq(from=-5,to=5,length=200)
+plot(x,1/(1+exp(-x)),type="l")
+```
+
+**PROBLEM !!!**
+
+
 ## モルモットの実験データから、ビタミンCを何で与えたかを予測する
 ### ロジット関数を用いた二値分類
 #### ロジット関数
 ### ロジット関数で二値分類を行う
+
+```{r}
+# airqualityを読み込み、欠損値がある行を削除してデータフレームに格納
+airquality <- na.omit(airquality)
+
+# 線形重回帰分析を実行
+model_lm <- lm(
+  Ozone ~ Solar.R + Wind + Temp,
+  data=airquality
+  )
+
+# 残差の散布図を描画
+qqnorm(
+  resid(model_lm) ) # 残差を抽出
+
+# 散布図に上下四分位点を結ぶ直線を描画
+qqline(                         
+  resid(model_lm), # 残差を抽出
+  lwd=2,
+  col="red")
+
+# 一般化線形モデルに正規分布を使う
+model_normal <- glm(
+  Ozone ~ Solar.R + Wind + Temp,
+  data=airquality,
+  family = gaussian # 正規分布を使用
+  )
+
+# 一般化線形モデルにガンマ分布を使う
+model_gamma <- glm(
+  Ozone ~ Solar.R + Wind + Temp,
+  data=airquality,
+  family = Gamma # ガンマ分布を使用
+)
+
+# 実測値に正規分布モデルとガンマ分布モデルの予測値を結合した表を作成
+pred <- cbind(airquality[,1],
+              fitted(model_normal), # 正規分布を使用したモデルの予測値
+              fitted(model_gamma))  # ガンマ分布を使用したモデルの予測値
+
+# 正規分布を使用したモデルのAIC値
+AIC(model_normal)
+# ガンマ分布を使用したモデルのAIC値
+AIC(model_gamma)
+
+# ガンマ分布を使用したモデルにおける残差の散布図を描画
+qqnorm(resid(model_gamma))
+# 散布図に上下四分位点を結ぶ直線を描画
+qqline(resid(model_gamma),lwd=2,col="red")
+```
+
+
+```{r}
+# ToothGrowthをデータフレームに格納
+data <- data.frame(ToothGrowth)
+
+# ロジット関数を適用したモデル
+# 投与方法(supp)を目的変数、
+# 歯の長(len)と投与量(dose)を説明変数にする
+model<- glm(supp ~ len + dose,
+            family=binomial, # ロジット関数を指定
+            data=data)       # データフレームを指定
+
+# 予測値を四捨五入して0と1に分類
+predict <- round(fitted(model))
+
+# データフレームを作成
+result <- data.frame(data[,2], predict)
+
+# クロス集計表を作成
+table(data[,2], predict)
+```
+
+
 ### Tips ロジット関数の逆関数はシグモイド関数 {-}
 
 # クラスター分析
@@ -879,6 +2785,132 @@ data
 #### 距離行列からコーフェン行列を作る（分析のプロセス③）
 ### 階層的クラスター分析で他の方法を試してみる
 #### クラスタリングの過程を見てみる
+
+```{r}
+# "学習時間.txt"をデータフレームに格納
+data <- read.delim(
+  "data/学習時間.txt",
+  header=TRUE, # 1行目は列名
+  row.names=1, # 1列目は行名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの1行目～7行目のデータを(7行,5列)の行列にする
+time <- matrix(c(data[1,],           
+                 data[2,],
+                 data[3,],
+                 data[4,],
+                 data[5,],
+                 data[6,],
+                 data[7,]),
+               7, 5, byrow = TRUE)  # (7行,5列)を指定
+
+# 列名を設定
+colnames(time) <- c(colnames(data))
+# 行名を設定
+rownames(time) <- c(rownames(data))
+# 行列を出力
+time
+```
+
+```{r}
+# ユークリッド距離を求める
+dist_time <- dist(time)
+# デフォルトの最遠隣法でクラスター分析を実行
+comp_time <- hclust(dist_time)
+# 樹形図を作成
+plot(comp_time)
+
+# 樹形図を作成(葉の高さを揃える)
+plot(comp_time, hang=-1)
+
+# クラスタリングの過程を示す行列を出力
+comp_time$merge
+
+# クラスターの枝の高さを出力
+comp_time$height
+
+# コーフェン行列を取得
+cophenetic(comp_time)
+
+# 樹形図の個体番号を取得
+comp_time$order
+```
+
+
+```{r}
+# キャンベラ距離を求める
+can_time <- dist(time,"canberra")
+# 最近隣法で分析
+single_time <- hclust(can_time, method="single")
+# 樹形図を作成(葉の高さを揃える)
+plot(single_time, hang=-1)
+
+
+# ユークリッド距離を求める
+euc_time <- dist(time, "euclidean")
+# ウォード法で分析
+ward_time <- hclust(euc_time, method="ward.D2")
+# 樹形図を作成(葉の高さを揃える)
+plot(ward_time, hang=-1)
+
+# コーフェン相関係数を求める
+# ユークリッド距離と最遠隣法
+cor(dist_time, cophenetic(comp_time))
+# キャンベラ距離と最近隣法
+cor(can_time, cophenetic(single_time))
+# ユークリッド距離とウォード法
+cor(euc_time, cophenetic(ward_time))
+pt()
+```
+
+```{r}
+# "学習時間.txt"をデータフレームに格納
+data <- read.delim(
+  "data/学習時間.txt",
+  header=TRUE, # 1行目は列名
+  row.names=1, # 1列目は行名
+  fileEncoding="UTF-8" # 文字コードの変換方式
+)
+
+# データフレームの1行目～7行目のデータを(7行,5列)の行列にする
+time <- matrix(c(data[1,],           
+                 data[2,],
+                 data[3,],
+                 data[4,],
+                 data[5,],
+                 data[6,],
+                 data[7,]),
+               7, 5, byrow = TRUE)  # (7行,5列)を指定
+
+# 列名を設定
+colnames(time) <- c(colnames(data))
+# 行名を設定
+rownames(time) <- c(rownames(data))
+# 行列を出力
+time
+```
+
+
+```{r}
+# 非階層的クラスター分析を実行
+k_time <- kmeans(time,
+                  2) # クラスターの数を2とする
+
+# 分類結果を出力
+k_time$cluster
+# クラスターの中心を出力
+k_time$centers
+# 各クラスター内の個体の数を出力
+k_time$size     
+
+# クラスター毎に色を変えて散布図を描く
+plot(time, col = k_time$cluster)
+# クラスターの中心点を上描きする
+points(k_time$centers, col = 1:2, pch = 8, cex=2)
+```
+
+
 ### Tips 大量のデータを的確にグループ分けする {-}
 
 # Rで機械学習
@@ -893,12 +2925,61 @@ data
 #### MAE（平均絶対誤差）
 #### 決定係数（R2）
 ### 機械学習で用いられるアルゴリズム
+
+
+
 ## 「ボストン住宅価格」の予測
 ### 「Boston Housing」データセット
 #### Onepoint rsampleのインストール
 ### 線形重回帰で住宅価格を予測する
 #### データを用意する
 #### 線形重回帰分析で住宅価格を予測する
+
+```{r}
+# MASSライブラリを読み込む
+library(MASS)
+# 表示用としてデータフレームに読み込む
+data <- Boston
+```
+
+```{r}
+# MASSライブラリを読み込む
+library(MASS)
+# rsampleライブラリを読み込む
+library(rsample)
+
+# Boston Housingをデータフレームに読み込む
+data <- Boston
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを8:2の割合で分割する
+df_split <- initial_split(data, prop = 0.8)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+# 訓練データ、テストデータの行(レコード)数を出力
+nrow(train)
+nrow(test)
+
+# 目的変数はmedv(住宅価格の中央値)、説明変数はその他の項目すべて
+# 訓練データを使用して線形重回帰分析を実行
+model_m = lm(medv ~ ., data=train)
+
+# 訓練データで住宅価格の中央値を予測する
+pred_m_train <- predict(model_m, newdata=train)
+# 訓練データの予測値の平均二乗誤差(MSE)を求める
+mse_m_train <- sum((train["medv"] - pred_m_train)^2
+                   )/length(pred_m_train)
+
+# テストデータをモデルに入力して住宅価格の中央値を予測
+pred_m_test <- predict(model_m, newdata=test)
+# テストデータの予測値の平均二乗誤差(MSE)を求める
+mse_m_test <- sum((test["medv"] - pred_m_test)^2
+                  )/length(pred_m_test)
+```
+
+
 ## Ridge回帰、Lasso回帰で住宅価格を予測する
 ### 線形回帰の正則化
 ### リッジ回帰
@@ -911,10 +2992,226 @@ data
 ### ラッソ回帰で住宅価格の中央値を予測する
 ### エラスティックネット
 ### エラスティックネットで住宅価格の中央値を予測する
+
+* `prepare-data.R`
+
+```{r}
+# MASSライブラリを読み込む
+library(MASS)
+# rsampleライブラリを読み込む
+library(rsample)
+# Boston Housingをデータフレームに読み込む
+data <- Boston
+
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを8:2の割合で分割する
+df_split <- initial_split(data, prop = 0.8)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+# 訓練データの目的変数(medv:住宅価格の中央値)の行列(404行,1列)を作成
+train_y <- as.matrix(train["medv"])
+# 訓練データの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(404行,13列)の行列にする
+train_x <- as.matrix(train[, -14])
+
+# テストデータの目的変数(medv:住宅価格の中央値)の行列(102行,13列)を作成
+test_y <- as.matrix(test["medv"])
+# テストデータの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(102行,13列)の行列にする
+test_x <- as.matrix(test[, -14])
+```
+
+* `ridge.R`
+
+```{r}
+# glmnetパッケージを読み込む
+library(glmnet)
+
+# 説明変数train_x、目的変数train_yを設定して
+# Ridge回帰(alpha=0)モデルを作成
+# 10-foldクロスバリデーションを行って今回のデータセットに最適なλの値を決定
+model_ridge <- cv.glmnet(train_x, # 訓練データの説明変数
+                         train_y, # 訓練データの目的変数
+                         alpha=0)
+
+# 平均二乗誤差を最小にするλの値を出力
+model_ridge$lambda.min
+# MSEが最小となる時のλに対応するパラメータを出力
+coef(model_ridge, s="lambda.min")
+
+# 訓練データの予測値を取得
+pred_la_train <- predict(model_ridge,
+                        newx=train_x,   # 訓練データを設定
+                        s="lambda.min") # λの値を設定
+# 訓練データの予測値の平均二乗誤差(MSE)を求める
+mse_la_train <- sum((train_y - pred_r_train)^2
+                    )/length(pred_r_train)
+
+# テストデータの予測値を取得
+pred_r_test <- predict(model_ridge,
+                       newx=test_x,     # テストデータを設定
+                       s="lambda.min" ) # λの値を設定
+# テストデータの予測値の平均二乗誤差(MSE)を求める
+mse_r_test <- sum((test_y - pred_r_test)^2
+                  )/length(pred_r_test)
+```
+
+
+```{r}
+# glmnetライブラリを読み込む
+library(glmnet)
+
+# 0.01～0.99まで0.01刻みの数列を作成
+alpha <- seq(0.01, 0.99, 0.01)
+# α値とMSEを格納するデータフレームを用意
+alpha_mse <- NULL
+# 0.01～0.99まで0.01刻みの値をα値に設定して
+# 10-foldクロスバリデーションによる最適なλの値を決定し、
+# データフレームに格納
+for (i in 1:length(alpha)) {
+  # alpha[i]をα値に設定し、最適なλの値を求める
+  m <- cv.glmnet(x=train_x,
+                 y=train_y,
+                 alpha = alpha[i])
+  # データフレームalpha_mseに現在のα値とMSEの最小値を順に連結
+  alpha_mse <- rbind(
+    alpha_mse,
+    data.frame(alpha = alpha[i],  # alphaに現在のα値を格納
+               mse = min(m$cvm))) # smeに現在のα値におけるMSEの最小値を格納
+}
+
+# alpha_mseのalphaカラムから最小のMSEに対応するα値を取得
+best_alpha <- alpha_mse$alpha[alpha_mse$mse == min(alpha_mse$mse)]
+# MSEを最小にするα値を出力
+best_alpha
+
+# 最適なαを「alpha = best_alpha」で指定して、
+# 10-foldクロスバリデーションによる最適なλの値を決定し、モデルを作成
+m <- cv.glmnet(x=train_x,
+               y=train_y,
+               alpha=best_alpha)
+
+# 最適なαを用いたモデルからMSEを最小にするλ値を取得
+best_lambda <- m$lambda.min
+# MSEを最小にするλ値を出力
+best_lambda
+
+# 最適なαとλの組み合わせを利用してElastic Netのモデルを作成
+model_en <- glmnet(x = train_x,
+                   y = train_y,
+                   lambda = best_lambda,
+                   alpha = best_alpha)
+
+# 訓練データの予測値を取得
+pred_en_train <- predict(model_en, newx=train_x)
+# 訓練データの予測値の平均二乗誤差(MSE)を求める
+mse_en_train <- sum((train_y - pred_en_train)^2
+                    )/length(train_y)
+
+# テストデータの予測値を取得
+pred_en_test <- predict(model_en, newx=test_x)
+# テストデータの予測値の平均二乗誤差(MSE)を求める
+mse_en_test <- sum((test_y - pred_en_test)^2
+                   )/length(test_y)
+```
+
+* `lasso.R`
+
+```{r}
+# glmnetライブラリを読み込む
+library(glmnet)
+
+# 説明変数train_x、目的変数train_yを設定して
+# Lasso回帰(alpha=01モデルを作成
+# 10-foldクロスバリデーションを行って今回のデータセットに最適なλの値を決定
+model_la <- cv.glmnet(train_x, # 訓練データの説明変数
+                      train_y, # 訓練データの目的変数
+                      alpha=1)
+
+# 平均二乗誤差を最小にするλの値を出力
+model_la$lambda.min
+# MSEが最小となる時のλに対応するパラメータを出力
+coef(model_la, s="lambda.min")
+
+# 訓練データの予測値を取得
+pred_la_train <- predict(model_la,
+                         newx=train_x,   # 訓練データを設定
+                         s="lambda.min") # λの値
+# 訓練データの予測値の平均二乗誤差(MSE)を求める
+mse_la_train <- sum((train_y - pred_la_train)^2
+                    )/length(train_y)
+
+# テストデータの予測値を取得
+pred_la_test <- predict(model_la,
+                        newx=test_x,     # テストデータを設定
+                        s="lambda.min" ) # λの値
+# テストデータの予測値の平均二乗誤差(MSE)を求める
+mse_la_test <- sum((test_y - pred_la_test)^2
+                   )/length(test_y)
+```
+
 ## 線形サポートベクター回帰
 ### サポートベクター回帰
 #### 線形サポートベクター回帰
 ### サポートベクター回帰で住宅価格の中央値を予測する
+
+* `prepare-data.R`
+
+```{r}
+# MASSライブラリを読み込む
+library(MASS)
+# rsampleライブラリを読み込む
+library(rsample)
+# Boston Housingをデータフレームに読み込む
+data <- Boston
+
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを8:2の割合で分割する
+df_split <- initial_split(data, prop = 0.8)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+# 訓練データの目的変数(medv:住宅価格の中央値)の行列(404行,1列)を作成
+train_y <- as.matrix(train["medv"])
+# 訓練データの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(404行,13列)の行列にする
+train_x <- as.matrix(train[, -14])
+
+# テストデータの目的変数(medv:住宅価格の中央値)の行列(102行,13列)を作成
+test_y <- as.matrix(test["medv"])
+# テストデータの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(102行,13列)の行列にする
+test_x <- as.matrix(test[, -14])
+```
+
+```{r}
+# kernlabを読み込む
+library(kernlab)
+
+# サポートベクトル回帰のモデルを作成
+model_svm <- ksvm(train_y~.,
+                  data=train_x)
+
+# 訓練データの予測値を取得
+pred_svm_train <- predict(model_svm, train_x)
+# 訓練データの予測値の平均二乗誤差(MSE)を求める
+mse_svm_train <- sum((train_y - pred_svm_train)^2
+                     )/length(train_y)
+
+# テストデータの予測値を取得
+pred_svm_test <- predict(model_svm, test_x)
+# テストデータの予測値の平均二乗誤差(MSE)を求める
+mse_svm_test <- sum((test_y - pred_svm_test)^2
+                    )/length(test_y)
+```
+
 ### Memo サポートベクターマシンのカーネル {-}
 #### Onepoint kernlabのインストール
 ## ランダムフォレスト回帰
@@ -922,19 +3219,209 @@ data
 #### 「決定木」というアルゴリズム
 #### 　ランダムフォレスト
 ### ランダムフォレスト回帰で住宅価格の中央値を予測する
+
+```{r}
+# MASSライブラリを読み込む
+library(MASS)
+# rsampleライブラリを読み込む
+library(rsample)
+# Boston Housingをデータフレームに読み込む
+data <- Boston
+
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを8:2の割合で分割する
+df_split <- initial_split(data, prop = 0.8)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+# 訓練データの目的変数(medv:住宅価格の中央値)の行列(404行,1列)を作成
+train_y <- as.matrix(train["medv"])
+# 訓練データの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(404行,13列)の行列にする
+train_x <- as.matrix(train[, -14])
+
+# テストデータの目的変数(medv:住宅価格の中央値)の行列(102行,13列)を作成
+test_y <- as.matrix(test["medv"])
+# テストデータの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(102行,13列)の行列にする
+test_x <- as.matrix(test[, -14])
+```
+
+```{r}
+# MASSライブラリを読み込む
+library(MASS)
+# rsampleライブラリを読み込む
+library(rsample)
+# Boston Housingをデータフレームに読み込む
+data <- Boston
+
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを8:2の割合で分割する
+df_split <- initial_split(data, prop = 0.8)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+# 訓練データの目的変数(medv:住宅価格の中央値)の行列(404行,1列)を作成
+train_y <- as.matrix(train["medv"])
+# 訓練データの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(404行,13列)の行列にする
+train_x <- as.matrix(train[, -14])
+
+# テストデータの目的変数(medv:住宅価格の中央値)の行列(102行,13列)を作成
+test_y <- as.matrix(test["medv"])
+# テストデータの説明変数としてmedv(住宅価格の中央値)以外の
+# すべての列(13列)を(102行,13列)の行列にする
+test_x <- as.matrix(test[, -14])
+```
+
 #### 　Onepoint randoｍForestのインストール
 ## 「Wine Quality」データセットを利用した分類
 ### 「Wine Quality」データセット
+
+```{r}
+# 「winequality-red」データセット(CSVファイル)をデータフレームに読み込む
+winequality <- read.csv(
+  "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+  sep =";" # 区切り文字を指定
+)
+
+# qualityをヒストグラムにする
+hist(winequality$quality)
+```
+
+
 ## サポートベクターマシンによる分類
 ### サポートベクターマシンによる分類
 #### マージンとサポートベクターによる分類
 ### サポートベクターマシンでワインの評価を分類する
+
+```{r}
+# 「winequality-red」データセット(CSVファイル)をデータフレームに読み込む
+winequality <- read.csv(
+  "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+  sep =";" # 区切り文字を指定
+)
+
+# rsampleライブラリを読み込む
+library(rsample)
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを7:3の割合で分割する
+df_split <- initial_split(winequality, prop = 0.7)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+# kernlabパッケージを読み込む
+library(kernlab)
+# ksvm関数で訓練データを学習
+svm_model <- ksvm(as.factor(quality)~.,
+                  data=train )
+
+# caretパッケージを読み込む
+library(caret)
+# 訓練データの予測値を評価
+confusionMatrix(as.factor(train$quality),
+                predict(svm_model, train))
+
+# テストデータの予測値を評価
+confusionMatrix(as.factor(test$quality),
+                predict(svm_model, test))
+```
+
+
 ## 「決定木」による分類
 ### 「決定木」による分類
 ### 「決定木」でワインの評価を分類する
+
+```{r}
+# 「winequality-red」データセット(CSVファイル)をデータフレームに読み込む
+winequality <- read.csv(
+  "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+  sep =";" # 区切り文字を指定
+)
+
+# rsampleライブラリを読み込む
+library(rsample)
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを7:3の割合で分割する
+df_split <- initial_split(winequality, prop = 0.7)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+# caretパッケージを読み込む
+library(caret)
+
+# 決定木のモデルを作成
+tree_model <- train(
+  as.factor(quality)~., # qualityをカテゴリデータに変換
+  data=train,
+  method="rpart"        # ツリーモデルを生成するrpartを指定
+)
+
+
+# 訓練データの予測値を評価
+confusionMatrix(as.factor(train$quality),
+                predict(tree_model, train))
+
+# テストデータの予測値を評価
+confusionMatrix(as.factor(test$quality),
+                predict(tree_model, test))
+```
+
+
 ### Memo 勾配ブースティング {-}
 ## ランダムフォレストによる分類
 ### ランダムフォレストによるワインの分類
+
+```{r}
+# 「winequality-red」データセット(CSVファイル)をデータフレームに読み込む
+winequality <- read.csv(
+  "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+  sep =";" # 区切り文字を指定
+)
+
+# rsampleライブラリを読み込む
+library(rsample)
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを7:3の割合で分割する
+df_split <- initial_split(winequality, prop = 0.7)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+
+# randomForestを読み込む
+library(randomForest)
+# ランダムフォレストのモデルを作成
+rf_model <- randomForest(as.factor(quality)~., # qualityをカテゴリデータに変換
+                         train)
+
+# caretパッケージを読み込むFCNN4R
+library(caret)
+
+# 訓練データの予測値を評価
+confusionMatrix(as.factor(train$quality),
+                predict(rf_model, train))
+
+# テストデータの予測値を評価
+confusionMatrix(as.factor(test$quality),
+                predict(rf_model, test))
+```
+
+
 ## ニューラルネットワークによる分類
 ### ニューラルネットワークによる分類
 #### ニューラルネットワークのニューロン
@@ -947,6 +3434,44 @@ data
 #### バックプロパゲーションの処理
 #### Onepoint NeuralNetToolsのインストール
 ### ニューラルネットワークでワインの評価を分類する
+
+```{r}
+# 「winequality-red」データセット(CSVファイル)をデータフレームに読み込む
+winequality <- read.csv(
+  "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+  sep =";" # 区切り文字を指定
+)
+
+# rsampleライブラリを読み込む
+library(rsample)
+# ランダムに分割する際の乱数の種(シード値)を設定
+set.seed(123)
+# 訓練データとテストデータを7:3の割合で分割する
+df_split <- initial_split(winequality, prop = 0.7)
+# 訓練データをデータフレームに格納
+train <- training(df_split)
+# テストデータをデータフレームに格納
+test <- testing(df_split)
+
+
+# randomForestを読み込む
+library(randomForest)
+# ランダムフォレストのモデルを作成
+rf_model <- randomForest(as.factor(quality)~., # qualityをカテゴリデータに変換
+                         train)
+
+# caretパッケージを読み込むFCNN4R
+library(caret)
+
+# 訓練データの予測値を評価
+confusionMatrix(as.factor(train$quality),
+                predict(rf_model, train))
+
+# テストデータの予測値を評価
+confusionMatrix(as.factor(test$quality),
+                predict(rf_model, test))
+```
+
 
 # Appendix 資料
 ## 関数リファレンス
