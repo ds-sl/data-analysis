@@ -1,15 +1,17 @@
 ---
 title: "Posit Primers"
 output:
-  html_notebook:
-    number_sections: yes
+  pdf_document:
     toc: yes
-    toc_float: yes
-  html_document: 
+  html_document:
     number_sections: yes
     toc: yes
     toc_float: yes
     df_print: tibble
+  html_notebook:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
 ---
 <div align = "right">Last Updated: `r Sys.Date()`</div>
 
