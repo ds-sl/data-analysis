@@ -1,5 +1,5 @@
 ---
-title: "World Inequality Report 2022: Examples"
+title: "World Inequality Report 2022"
 author: "DS-SL"
 date: "`r Sys.Date()`" 
 output: 
@@ -11,7 +11,7 @@ output:
 
 # Introduction
 
-In this note, we study how to construct charts presented in World Inequality Report. We focus on the Executive Summary, however, we hope that you can study the report in more detail using the original data provided in the site.
+In this note, we study how to construct, or recreate charts presented in World Inequality Report. We focus on the Executive Summary, however, we hope that you can study the report in more detail using the original data provided in the site.
 
 ## WIR2022
 
@@ -22,7 +22,7 @@ In this note, we study how to construct charts presented in World Inequality Rep
 There is an R package to make it easier to download the data.
 
 * [R package to download data from the WID.world database](https://github.com/thomasblanchet/wid-r-tool)
-
+  - See [`download_wid`](#wir-d-tool)
 
 # Executive Summary
 
@@ -76,6 +76,8 @@ df_f1 %>% select(cat = ...1, 2:4) %>%
   ggplot(aes(x = cat, y = value, fill = group)) +
   geom_col(position = "dodge") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  geom_text(aes(x = cat, y = value, group = group, label = scales::label_percent(accuracy=1)(value)), 
+            position = position_dodge(width = 0.9)) + 
   labs(title = "Figure 1. Global income and wealth inequality, 2021",
        x = "", y = "Share of total income or wealth", fill = "")
 ```
@@ -135,6 +137,22 @@ df_f1 %>% select(cat = ...1, 2:4) %>%
   ggplot(aes(x = cat, y = value, fill = group)) +
   geom_col(position = "dodge") + 
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 1. Global income and wealth inequality, 2021",
+       x = "", y = "Share of total income or wealth", fill = "")
+```
+
+##### Step 6.
+
+* Add the value in percent as the text to top of each column.
+
+```{r}
+df_f1 %>% select(cat = ...1, 2:4) %>%
+  pivot_longer(2:4, names_to = "group", values_to = "value") %>%
+  ggplot(aes(x = cat, y = value, fill = group)) +
+  geom_col(position = "dodge") + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  geom_text(aes(x = cat, y = value, group = group, label = scales::label_percent(accuracy=1)(value)), 
+            position = position_dodge(width = 0.9)) + 
   labs(title = "Figure 1. Global income and wealth inequality, 2021",
        x = "", y = "Share of total income or wealth", fill = "")
 ```
@@ -205,19 +223,32 @@ df_f3
 
 
 ```{r}
-df_f3$Country[df_f3$Country == "DR Congo"] <- "Democratic Republic of the Congo"
-df_f3$Country[df_f3$Country == "Congo"] <- "Republic of Congo"
-df_f3$Country[df_f3$Country == "Russian Federation"] <- "Russia"
+map0<-map_data("world")
+map0$region[map0$region=="Democratic Republic of the Congo"]<-"DR Congo"
+map0$region[map0$region=="Republic of Congo"]<-"Congo"
+map0$region[map0$region=="Ivory Coast"]<-"Cote dIvoire"
+map0$region[map0$region=="Vietnam"]<-"Viet Nam"
+map0$region[map0$region=="Russia"]<-"Russian Federation"
+map0$region[map0$region=="South Korea"]<-"Korea"
+map0$region[map0$region=="UK"]<-"United Kingdom"
+map0$region[map0$region=="Brunei"]<-"Brunei Darussalam"
+map0$region[map0$region=="Laos"]<-"Lao PDR"
+map0$region[map0$region=="Cote dIvoire"]<-"Cote d'Ivoire"
+map0$region[map0$region=="Cape Verde"]<- "Cabo Verde"
+map0$region[map0$region=="Syria"]<- "Syrian Arab Republic"
+map0$region[map0$region=="Trinidad"]<- "Trinidad and Tobago"
+map0$region[map0$region=="Tobago"]<- "Trinidad and Tobago"
 
 df_f3 %>% 
   mutate(`Top 10 Bottom 50 Ratio` = cut(T10B50,breaks = c(5, 12, 13, 16, 19,140), include.lowest = TRUE)) %>%
-  ggplot(aes(map_id = Country)) + geom_map(aes(fill = `Top 10 Bottom 50 Ratio`), map = world_map) + expand_limits(x = world_map$long, y = world_map$lat) +
+  ggplot(aes(map_id = Country)) + geom_map(aes(fill = `Top 10 Bottom 50 Ratio`), map = map0) + expand_limits(x = world_map$long, y = world_map$lat) +
   labs(title = "Figure 3. Top 10/Bottom 50 income gaps across the world, 2021",
        x = "", y = "", fill = "Top 10/Bottom 50 ratio") +
   theme(legend.position="bottom") + 
   scale_fill_brewer(palette='YlOrRd')
 ```
 **Interpretation**: In Brazil, the bottom 50% earns 29 times less than the top 10%. The value is 7 in France. Income is measured after pension and unemployment payments and benefits received by individuals but before other taxes they pay and transfers they receive. Source and series: wir2022.wid.world/methodology.
+
 
 #### Explanation
 ##### Step 1.
@@ -230,7 +261,7 @@ df_f3
 We use `world_map` data. Let us look at the data first.
 
 ```{r}
-world_map
+datatable(world_map)
 ```
 
 Let us try using the standard template of `ggplot`. We use `Country` for `map_id` and `T10B50` for numerical data. Since `world_map` data contains `long` and `lat` of each region, we assign them as `expand_limit`.
@@ -248,7 +279,7 @@ We observe a couple of issues by comparing with the image of the original.
 
 ![F3_world_map](figs/F3.png)
 
-1. Russia and Congo areas are void.
+1. Russia, Congo and some other areas are void.
 2. Scale and the legend should be improved.
 3. It may be better to bring the legend at the bottom to provide more width to the world map.
 
@@ -272,18 +303,82 @@ df_f3_rev$Country[df_f3_rev$Country == "DR Congo"] <- "Democratic Republic of th
 df_f3_rev$Country[df_f3_rev$Country == "Congo"] <- "Republic of Congo"
 ```
 
-Now check the country names again.
+Now check the country names again using `anti_join`. By the code below, we can create a new table such that there is no region in `world_map` corresponding to Country in `df_f3_rev`.
 
 ```{r}
-datatable(df_f3_rev)
+df_f3_rev %>% anti_join(world_map, by = c("Country" = "region"))
 ```
 
+We can proceed one by one. However, WIR provides the code of this part in R. So let us use it. It is in Computer Codes at the Methodology [site](https://wir2022.wid.world/methodology/). Download 'Full Datasets' and 'Computer Codes'. Then in WIR2022 - Computer codes, find `Chapter1_Maps.R`. 
 
 ```{r}
-df_f3_rev %>% 
+map<-map_data("world")
+map$region[map$region=="Democratic Republic of the Congo"]<-"DR Congo"
+map$region[map$region=="Republic of Congo"]<-"Congo"
+map$region[map$region=="Ivory Coast"]<-"Cote dIvoire"
+map$region[map$region=="Vietnam"]<-"Viet Nam"
+# map$region[map$region=="United Arab Emirates"]<-"UAE"
+```
+
+The last one for UAE seems to be wrong, so deleted.
+
+Since the data used in the next line was not find, let me use `map` now.
+
+```
+index_region2<-read_dta("index_region.dta")
+map<-left_join(map,index_region2,by=c("region"="name_region"))
+map$ISO[map$region=="Greenland"]<-"GL"
+map$ISO[map$region=="UAE"]<-"AE"
+map$ISO[map$region=="Brunei"]<-"BR" # done
+map$ISO[map$region=="Antigua"]<-"AG"
+map$ISO[map$region=="Cape Verde"]<-"CV"
+map$ISO[map$region=="Cote dIvoire"]<-"CI"
+map$ISO[map$region=="UK"]<-"GB" # done
+map$ISO[map$region=="Canary Islands"]<-"ES"
+map$ISO[map$region=="French Guiana"]<-"FR"
+map$ISO[map$region=="Saint Kitts"]<-"KN"
+map$ISO[map$region=="South Korea"]<-"KR"
+map$ISO[map$region=="Saint Martin"]<-"MF"
+map$ISO[map$region=="Macedonia"]<-"MK"
+map$ISO[map$region=="Russia"]<-"RU" # done
+map$ISO[map$region=="Bonaire"]<-"BQ"
+map$ISO[map$region=="Sint Eustatius"]<-"BQ"
+map$ISO[map$region=="Saba"]<-"BQ"
+map$ISO[map$region=="Laos"]<-"LA"
+map$ISO[map$region=="Sint Maarten"]<-"SX"
+map$ISO[map$region=="Syria"]<-"SY"
+map$ISO[map$region=="Trinidad"]<-"TT"
+map$ISO[map$region=="Tobago"]<-"TT"
+map$ISO[map$region=="Virgin Islands"]<-"VI"
+map$ISO[map$region=="Saint Vincent"]<-"VC"
+map$ISO[map$region=="Grenadines"]<-"VC"
+map$ISO[map$region=="French Southern and Antarctic Lands"]<-"FR"
+map$ISO[map$region=="Western Sahara"]<-"WS"
+```
+```{r}
+map$region[map$region=="Russia"]<-"Russian Federation"
+map$region[map$region=="South Korea"]<-"Korea"
+map$region[map$region=="UK"]<-"United Kingdom"
+map$region[map$region=="Brunei"]<-"Brunei Darussalam"
+map$region[map$region=="Laos"]<-"Lao PDR"
+map$region[map$region=="Cote dIvoire"]<-"Cote d'Ivoire"
+map$region[map$region=="Cape Verde"]<- "Cabo Verde"
+map$region[map$region=="Syria"]<- "Syrian Arab Republic"
+map$region[map$region=="Trinidad"]<- "Trinidad and Tobago"
+map$region[map$region=="Tobago"]<- "Trinidad and Tobago"
+```
+
+```{r}
+df_f3 %>% anti_join(map, by = c("Country" = "region"))
+```
+
+Is Zanzibar a part of Tanzania?
+
+```{r}
+df_f3 %>% 
   ggplot(aes(map_id = Country)) + 
-  geom_map(aes(fill = `T10B50`), map = world_map) +
-  expand_limits(x = world_map$long, y = world_map$lat)
+  geom_map(aes(fill = `T10B50`), map = map) +
+  expand_limits(x = map$long, y = map$lat)
 ```
 
 
@@ -1093,3 +1188,58 @@ df_t1
 ```
 **Interpretation**: In 2021, there were 62.2 million people in the world owning more than $1 million (measured at Market Exchange Rates). Their average wealth was $ 2.8 million, representing a total of  $174 trillion. In our Tax scenario 2, a global progressive wealth tax would yield 2.1% of global income, taking into account capital depreciation and evasion. Sources and series: wir2022.wid.world/methodology.
 
+
+# Package: `WID` {#wir-d-tool}
+
+`WID` is a package in development stage, and it is not available at CRAN. So we need a spacial way to install the package.
+
+To install, run the following code in Console. If you are recommended to update, select 1 by choosing 'All'.
+
+```{r include=FALSE}
+install.packages("devtools")
+devtools::install_github("WIDworld/wid-r-tool")
+```
+
+For references use '?download_wid' or put 'download_wid' in the search box under Help.
+
+It is similar to `WDI`. For more detail and examples, see [vignettes](https://ds-sl.github.io/data-analysis/wir_download.pdf).
+
+## Examples
+
+```{r}
+library("wid")
+```
+
+### Evolution of national income over long period
+
+We now plot the evolution of average net national income per adult in Japan, France, Germany, the United Kingdom and the United States.
+
+```{r, message=FALSE, fig.align='center', fig.height=4, cache=TRUE}
+# Average national income data
+data <- download_wid(
+    indicators = "anninc", # Average net national income
+    areas = c("JP", "FR", "US", "DE", "GB"),
+    ages = 992 # Adults
+) %>% rename(value_lcu = value)
+# Purchasing power parities with US dollar
+ppp <- download_wid(
+    indicators = "xlcusp", # US PPP
+    areas = c("JP", "FR", "US", "DE", "GB"), # France, China and United States
+    year = 2016 # Reference year only
+) %>% rename(ppp = value) %>% select(-year, -percentile)
+# Convert from local currency to PPP US dollar
+data <- merge(data, ppp, by = "country") %>%
+    mutate(value_ppp = value_lcu/ppp) %>%
+    filter(year %in% 1950:2021)
+ggplot(data) +
+    geom_line(aes(x = year, y = value_ppp, color = country, linetype=country)) +
+    scale_y_log10(breaks = c(2e3, 5e3, 1e4, 2e4, 5e4)) +
+    ylab("2016 $ PPP") +
+    scale_color_discrete(
+        labels = c("JP" = "Japan", "US" = "USA", "FR" = "France", "DE" = "Germany", "GB" = "UK")
+    ) + 
+    scale_linetype_discrete(
+        labels = c("JP" = "Japan", "US" = "USA", "FR" = "France", "DE" = "Germany", "GB" = "UK")
+    ) + 
+    ggtitle("Average net national income per adult")
+```
