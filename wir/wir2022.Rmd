@@ -1,5 +1,5 @@
 ---
-title: "World Inequality Report 2022"
+title: "World Inequality Report 2022: Examples"
 author: "DS-SL"
 date: "`r Sys.Date()`" 
 output: 
@@ -11,14 +11,28 @@ output:
 
 # Introduction
 
+In this note, we study how to construct charts presented in World Inequality Report. We focus on the Executive Summary, however, we hope that you can study the report in more detail using the original data provided in the site.
+
 ## WIR2022
 
+* World Inequality Report: https://wir2022.wid.world/
 * Executive Summary: https://wir2022.wid.world/executive-summary/
 * Methodology: https://wir2022.wid.world/methodology/
+
+There is an R package to make it easier to download the data.
+
+* [R package to download data from the WID.world database](https://github.com/thomasblanchet/wid-r-tool)
+
 
 # Executive Summary
 
 ## Setup
+
+```{r setup, include=FALSE}
+Sys.setenv(LANG = "en")
+dir.create("data")
+```
+
 
 * Data: https://wir2022.wid.world/www-site/uploads/2022/03/WIR2022TablesFigures-Summary.xlsx
 * Data are in Excel format and charts are also created in Excel.
@@ -26,6 +40,7 @@ output:
 ```{r}
 library(tidyverse)
 library(readxl)
+library(DT)
 ```
 
 ```{r summary-data, cash = TRUE, eval = FALSE}
@@ -182,14 +197,142 @@ df_f2 %>% pivot_longer(3:5, names_to = "level", values_to = "value") %>%
 
 ### F3: Top 10/Bottom 50 income gaps across the world, 2021
 
+
 ```{r data-f3, cash = TRUE}
 df_f3 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F3")
 df_f3
 ```
 
+
+```{r}
+df_f3$Country[df_f3$Country == "DR Congo"] <- "Democratic Republic of the Congo"
+df_f3$Country[df_f3$Country == "Congo"] <- "Republic of Congo"
+df_f3$Country[df_f3$Country == "Russian Federation"] <- "Russia"
+
+df_f3 %>% 
+  mutate(`Top 10 Bottom 50 Ratio` = cut(T10B50,breaks = c(5, 12, 13, 16, 19,140), include.lowest = TRUE)) %>%
+  ggplot(aes(map_id = Country)) + geom_map(aes(fill = `Top 10 Bottom 50 Ratio`), map = world_map) + expand_limits(x = world_map$long, y = world_map$lat) +
+  labs(title = "Figure 3. Top 10/Bottom 50 income gaps across the world, 2021",
+       x = "", y = "", fill = "Top 10/Bottom 50 ratio") +
+  theme(legend.position="bottom") + 
+  scale_fill_brewer(palette='YlOrRd')
+```
+**Interpretation**: In Brazil, the bottom 50% earns 29 times less than the top 10%. The value is 7 in France. Income is measured after pension and unemployment payments and benefits received by individuals but before other taxes they pay and transfers they receive. Source and series: wir2022.wid.world/methodology.
+
+#### Explanation
+##### Step 1.
+
+```{r data-f3-2, cash=TRUE}
+df_f3 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F3")
+df_f3
+```
+
+We use `world_map` data. Let us look at the data first.
+
+```{r}
+world_map
+```
+
+Let us try using the standard template of `ggplot`. We use `Country` for `map_id` and `T10B50` for numerical data. Since `world_map` data contains `long` and `lat` of each region, we assign them as `expand_limit`.
+
+```{r}
+df_f3 %>% 
+  ggplot(aes(map_id = Country)) + 
+  geom_map(aes(fill = `T10B50`), map = world_map) +
+  expand_limits(x = world_map$long, y = world_map$lat)
+```
+
+##### Step 2.
+
+We observe a couple of issues by comparing with the image of the original.
+
 ![F3_world_map](figs/F3.png)
 
-_Not Yet_ 
+1. Russia and Congo areas are void.
+2. Scale and the legend should be improved.
+3. It may be better to bring the legend at the bottom to provide more width to the world map.
+
+The region name and the country name may be different in two datasets `world_map` and `df_f3`. Let us take care of the first issue.
+
+In order to search names, we use `DT::datatable`, i.e., `datatable` in `DT` package. 
+
+```{r}
+datatable(df_f3)
+```
+Search for 'russia' and 'congo', we find that 
+
+* Russian Federation = Russia in `world_map`
+* DR Congo = Democratic Republic of the Congo in `world_map`
+* Congo = Republic of Congo in `world_map`
+
+```{r}
+df_f3_rev <- df_f3
+df_f3_rev$Country[df_f3_rev$Country == "Russian Federation"] <- "Russia"
+df_f3_rev$Country[df_f3_rev$Country == "DR Congo"] <- "Democratic Republic of the Congo"
+df_f3_rev$Country[df_f3_rev$Country == "Congo"] <- "Republic of Congo"
+```
+
+Now check the country names again.
+
+```{r}
+datatable(df_f3_rev)
+```
+
+
+```{r}
+df_f3_rev %>% 
+  ggplot(aes(map_id = Country)) + 
+  geom_map(aes(fill = `T10B50`), map = world_map) +
+  expand_limits(x = world_map$long, y = world_map$lat)
+```
+
+
+##### Step 3.
+
+Next we add a new column `Top 10 Bottom 50 Ratio` by setting new breaks of `T10B50`.
+Place the legend at the bottom using `theme(legend.position="bottom")`.
+
+```{r}
+df_f3_rev %>% 
+  mutate(`Top 10 Bottom 50 Ratio` = cut(T10B50, breaks = c(5, 12, 13, 16, 19, 140), include.lowest = TRUE)) %>%
+  ggplot(aes(map_id = Country)) + geom_map(aes(fill = `Top 10 Bottom 50 Ratio`), map = world_map) + expand_limits(x = world_map$long, y = world_map$lat) +
+  theme(legend.position="bottom")
+```
+
+##### Step 4.
+
+Finally add the title, remove x and y labels, and change the legend name.
+
+```{r}
+df_f3_rev %>% 
+  mutate(`Top 10 Bottom 50 Ratio` = cut(T10B50, breaks = c(5, 12, 13, 16, 19, 140), include.lowest = TRUE)) %>%
+  ggplot(aes(map_id = Country)) + geom_map(aes(fill = `Top 10 Bottom 50 Ratio`), map = world_map) + expand_limits(x = world_map$long, y = world_map$lat) +
+  labs(title = "Figure 3. Top 10/Bottom 50 income gaps across the world, 2021",
+       x = "", y = "", fill = "Top 10/Bottom 50 ratio") +
+  theme(legend.position="bottom")
+```
+
+##### Step 5.
+
+If you want to change color palette, see:
+
+* https://ggplot2.tidyverse.org/reference/scale_brewer.html
+* http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+
+```{r}
+df_f3_rev %>% 
+  mutate(`Top 10 Bottom 50 Ratio` = cut(T10B50, breaks = c(5, 12, 13, 16, 19, 140), include.lowest = TRUE)) %>%
+  ggplot(aes(map_id = Country)) + geom_map(aes(fill = `Top 10 Bottom 50 Ratio`), map = world_map) + expand_limits(x = world_map$long, y = world_map$lat) +
+  labs(title = "Figure 3. Top 10/Bottom 50 income gaps across the world, 2021",
+       x = "", y = "", fill = "Top 10/Bottom 50 ratio") +
+  theme(legend.position="bottom") +
+  scale_fill_brewer(palette='YlOrRd')
+```
+
+
+
+
+
 
 ### F4: The extreme concentration of capital: wealth inequality across the world, 2021
 
@@ -327,7 +470,7 @@ df_f6 %>% select(year = "...1", 2:3) %>%
        x = "", y = "Share of global inequality (% of total Theil index)", fill = "") + 
   annotate("text", x = 1850, y = 0.28, label = stringr::str_wrap("1820: Between country inequality represents 11% of global inequality", width = 20), size = 3) + 
   annotate("text", x = 1980, y = 0.70, label = stringr::str_wrap("1980: Between country inequality represents 57% of global inequality", width = 20), size = 3) +
-    annotate("text", x = 1990, y = 0.30, label = stringr::str_wrap("2020: Between country inequality represents 32% of global inequality", width = 20), size = 3)
+  annotate("text", x = 1990, y = 0.30, label = stringr::str_wrap("2020: Between country inequality represents 32% of global inequality", width = 20), size = 3)
 ```
 
 Legend can be placed at the bottom: `theme(legend.position="bottom")`
@@ -567,6 +710,10 @@ df_f8 %>%
 
 ### F9: Average annual wealth growth rate, 1995-2021
 
+Original
+
+![F9_world_map](figs/F9.png)
+
 ```{r data-f9, cash = TRUE}
 df_f9 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F9")
 df_f9
@@ -582,6 +729,42 @@ df_f9 %>% select(p, wealth = 'Wealth growth 1995-2021') %>%
 ```
 **Interpretation**: Growth rates among the poorest half of the population were between 3% and 4% per year, between 1995 and 2021. Since this group started from very low wealth levels, its absolute levels of growth remained very low. The poorest half of the world population only captured 2.3% of overall wealth growth since 1995. The top 1%  benefited from high growth rates (3% to 9% per year). This group captured 38% of total wealth growth between 1995 and 2021. Net household wealth is equal to the sum of financial assets (e.g. equity or bonds) and non-financial assets (e.g. housing or land) owned by individuals, net of their debts.   
 **Sources and series**: wir2022.wid.world/methodology.
+
+
+#### Explanation
+
+##### Step 1.
+
+```{r data-f9-2, cash = TRUE}
+df_f9 <- read_excel("data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F9")
+df_f9
+```
+
+```{r}
+df_f9_rev <- df_f9 %>% mutate(pp = 1/(100-p))
+df_f9_rev
+```
+
+```{r}
+df_f9_rev %>% select(pp, wealth = 'Wealth growth 1995-2021') %>%
+  ggplot() +
+  stat_smooth(aes(x = pp, y = wealth), span = 0.25, se = FALSE) +
+#  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
+       x = "←1% poorest                               Global wealth group                                 0.001% richest→", y = "Per adult annual growth rate in wealth, net of inflation (%)", color = "")
+```
+##### Step 2.
+
+```{r}
+df_f9 %>% select(p, wealth = 'Wealth growth 1995-2021') %>%
+  ggplot() +
+  geom_point(aes(x = p, y = wealth)) +
+#  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
+       x = "←1% poorest                               Global wealth group                                 0.001% richest→", y = "Per adult annual growth rate in wealth, net of inflation (%)", color = "")
+```
 
 _Not Yet_
 
