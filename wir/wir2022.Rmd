@@ -1199,7 +1199,7 @@ df_t1
 
 To install, run the following code in Console. If you are recommended to update, select 1 by choosing 'All'.
 
-```{r include=FALSE}
+```{r eval=FALSE}
 install.packages("devtools")
 devtools::install_github("WIDworld/wid-r-tool")
 ```
