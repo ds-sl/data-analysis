@@ -1208,6 +1208,8 @@ For references use '?download_wid' or put 'download_wid' in the search box under
 
 It is similar to `WDI`. For more detail and examples, see [vignettes](https://ds-sl.github.io/data-analysis/wir_download.pdf).
 
+For indicators of WIR, see [codebook](https://wid.world/codes-dictionary).
+
 ## Examples
 
 ```{r}
