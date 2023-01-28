@@ -699,7 +699,7 @@ df_f8 %>%
   stat_smooth(aes(x = year, y = value, color = country, linetype = type), span = 0.25, se = FALSE, size=0.75) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(title = "Figure 8. The rise of private versus the decline of public wealth in rich countries, 1970-2020", 
-       x = "", y = "wealth as as % of national income", color = "", type = "")
+       x = "", y = "wealth as % of national income", color = "", type = "")
 ```
 **Interpretation**: Public wealth is the sum of all financial and non-financial assets, net of debts, held by governments. Public wealth dropped from 60% of national income in 1970 to -106% in 2020 in the UK.   
 **Sources and series**: wir2022.wid.world/methodology, Bauluz et al. (2021) and updates.
@@ -790,7 +790,7 @@ df_f8 %>%
   stat_smooth(aes(x = year, y = value, color = country, linetype = type), span = 0.25, se = FALSE, size=0.75) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(title = "Figure 8. The rise of private versus the decline of public wealth in rich countries, 1970-2020", 
-       x = "", y = "wealth as as % of national income", color = "", type = "")
+       x = "", y = "wealth as % of national income", color = "", type = "")
 ```
 
 ##### Step 6.
@@ -804,7 +804,7 @@ df_f8 %>%
   stat_smooth(aes(x = year, y = value, color = group), span = 0.25, se = FALSE, size=0.75) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(title = "Figure 8. The rise of private versus the decline of public wealth in rich countries, 1970-2020", 
-       x = "", y = "wealth as as % of national income", color = "")
+       x = "", y = "wealth as % of national income", color = "")
 ```
 
 ### F9: Average annual wealth growth rate, 1995-2021
