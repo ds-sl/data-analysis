@@ -914,64 +914,79 @@ df_f8 %>% drop_na() %>%
 
 ### F9: Average annual wealth growth rate, 1995-2021
 
-Original
-
-![F9_world_map](figs/F9.png)
-
 ```{r data-f9, cash = TRUE}
 df_f9 <- read_excel("./data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F9")
 df_f9
 ```
 
 ```{r}
-df_f9 %>% select(p, wealth = 'Wealth growth 1995-2021') %>%
-  ggplot() +
-  geom_smooth(aes(x = p, y = wealth), span = 0.25, se = FALSE) +
-#  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+brks <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99, 99.9, 99.99, 99.999)
+df_f9 %>% 
+  mutate(level = cut(p, breaks = c(brks,100), labels = as.character(brks), include.lowest = TRUE)) %>% 
+  mutate(xlabel = as.numeric(level)+0.8) %>%
+  ggplot(aes(x = xlabel, y = `Wealth growth 1995-2021`)) + geom_smooth(method = "loess", formula = y~x, se = FALSE, span = 0.5) + 
+  scale_x_discrete(limits=as.character(brks)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 0.1)) +
   labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
-       x = "←1% poorest                               Global wealth group                                 0.001% richest→", y = "Per adult annual growth rate in wealth, net of inflation (%)", color = "")
+       x = "←1% poorest Global wealth group              0.001% richest→", 
+       y = "Per adult annual growth rate in wealth, \nnet of inflation (%)")
 ```
 **Interpretation**: Growth rates among the poorest half of the population were between 3% and 4% per year, between 1995 and 2021. Since this group started from very low wealth levels, its absolute levels of growth remained very low. The poorest half of the world population only captured 2.3% of overall wealth growth since 1995. The top 1%  benefited from high growth rates (3% to 9% per year). This group captured 38% of total wealth growth between 1995 and 2021. Net household wealth is equal to the sum of financial assets (e.g. equity or bonds) and non-financial assets (e.g. housing or land) owned by individuals, net of their debts.   
 **Sources and series**: wir2022.wid.world/methodology.
-
 
 #### Explanation
 
 ##### Step 1.
 
-```{r data-f9-2, cash = TRUE}
-df_f9 <- read_excel("./data/WIR2022TablesFigures-Summary.xlsx", sheet = "data-F9")
-df_f9
-```
+* Let's look at the original chart
+
+![F9_world_map](figs/F9.png){width = 100%}
+
+* The scale of the x-axis is not evenly partitioned. It is (0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99, 99.9, 99.99, 99.999).
+* Look at the column p of the data.
 
 ```{r}
-df_f9_rev <- df_f9 %>% mutate(pp = 1/(100-p))
-df_f9_rev
+df_f9 %>% distinct(p) %>% pull()
 ```
+* Use cut to break in levels.
 
 ```{r}
-df_f9_rev %>% select(pp, wealth = 'Wealth growth 1995-2021') %>%
-  ggplot() +
-  stat_smooth(aes(x = pp, y = wealth), span = 0.25, se = FALSE) +
-#  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
-       x = "←1% poorest                               Global wealth group                                 0.001% richest→", y = "Per adult annual growth rate in wealth, net of inflation (%)", color = "")
+brks <- c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99, 99.9, 99.99, 99.999)
+df_f9 %>% mutate(level = cut(p, breaks = c(brks,100), labels = as.character(brks), include.lowest = TRUE))
 ```
+
 ##### Step 2.
 
+* Add `xlabel` in numeric.
+
 ```{r}
-df_f9 %>% select(p, wealth = 'Wealth growth 1995-2021') %>%
-  ggplot() +
-  geom_point(aes(x = p, y = wealth)) +
-#  scale_x_continuous(breaks = round(c(seq(0, 90, by = 10), 99.9, 99.99, 99.999,3))) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-  labs(title = "Figure 9. Average annual wealth growth rate, 1995-2021", 
-       x = "←1% poorest                               Global wealth group                                 0.001% richest→", y = "Per adult annual growth rate in wealth, net of inflation (%)", color = "")
+df_f9 %>% mutate(level = cut(p, breaks = c(brks,100), labels = as.character(brks), include.lowest = TRUE)) %>% 
+  mutate(xlabel = as.numeric(level))
 ```
 
-_Not Yet_
+##### Step 3.
+
+* Draw a curve using `geom_smooth`.
+* Added 0.5 to represent the mean value in each interval.
+
+```{r}
+df_f9 %>% mutate(level = cut(p, breaks = c(brks,100), labels = as.character(brks), include.lowest = TRUE)) %>% 
+  mutate(xlabel = as.numeric(level)+0.5) %>%
+  ggplot(aes(x = xlabel, y = `Wealth growth 1995-2021`)) + geom_smooth(method = "loess", formula = y~x, se = FALSE, span = 0.5)
+```
+
+##### Step 4.
+
+* Use `scale_x_discrete(limits=as.character(brks))` to change the label of the x-axis.
+* Use `scale_y_continuous(labels = scales::percent_format(accuracy = 0.1))`.
+
+```{r}
+df_f9 %>% mutate(level = cut(p, breaks = c(brks,100), labels = as.character(brks), include.lowest = TRUE)) %>% 
+  mutate(xlabel = as.numeric(level)+ 0.8) %>%
+  ggplot(aes(x = xlabel, y = `Wealth growth 1995-2021`)) + geom_smooth(method = "loess", formula = y~x, se = FALSE, span = 0.5) + 
+  scale_x_discrete(limits=as.character(brks)) + 
+  scale_y_continuous(labels = scales::percent_format(accuracy = 0.1))
+```
 
 ### F10: The share of wealth owned by the global 0.1% and billionaires, 2021
 
@@ -1314,8 +1329,86 @@ df_t1
 
 ## Data Used in Chapter 1 to Chapter 10
 
+There are three ways to import data used in Chapter 1 to Chapter 10.
+
+### Use the link to download the data.
+
+1. Go to the Methodology site: https://wir2022.wid.world/methodology/
+
+2. Copy the link to Dataset 2, i.e., the datasets of chapters 1 to 10.
+
+```{r eval = FALSE}
+url_wir1to10 <- "https://wir2022.wid.world/www-site/uploads/2022/03/WIR2022TablesFigures-Chapter.zip"
+```
+
+3. Download the data in your data folder.
+
+```{r eval = FALSE}
+download.file(url_wir1to10, destfile = "./data/wir1to10.zip", mode = "wb")
+```
+3. Unzip the file.
+
+```{r eval = FALSE}
+unzip("./data/wir1to10.zip", exdir = "./data")
+```
+
+
 * Download the data from the following site.
   - Methodology: https://wir2022.wid.world/methodology/
+  
+4. Check the file names and check the sheet names.
+
+```{r eval = FALSE}
+list.files("./data/WIR2022TablesFigures-Chapter")
+```
+
+```{r eval = FALSE}
+excel_sheets("./data/WIR2022TablesFigures-Chapter/WIR2022TablesFigures-Chapter1.xlsx")
+```
+
+5. Import the data table.
+
+```{r eval = FALSE}
+wir_F1.0 <- read_excel("./data/WIR2022TablesFigures-Chapter/WIR2022TablesFigures-Chapter1.xlsx", sheet = "data-F1.0")
+wir_F1.0
+```
+
+6. Select the range by slice or use range option.
+
+```{r eval = FALSE}
+wir_F1.0 <- wir_F1.0 %>% slice(1:2)
+wir_F1.0
+```
+
+```{r eval = FALSE}
+wir_F1.0a <- read_excel("./data/WIR2022TablesFigures-Chapter/WIR2022TablesFigures-Chapter1.xlsx", sheet = "data-F1.0", range = "A2:E4")
+wir_F1.0a
+```
+
+```{r eval = FALSE}
+wir_F1.0b <- read_excel("./data/WIR2022TablesFigures-Chapter/WIR2022TablesFigures-Chapter1.xlsx", sheet = "data-F1.0", range = "A7:E9")
+wir_F1.0b
+```
+### Download the zip file and move to you data folder
+
+1. Go to the Methodology site: https://wir2022.wid.world/methodology/
+
+2. Double click the download link under Dataset 2, i.e., the datasets of chapters 1 to 10 to dounload the zip file.
+
+3. Unzip the file using the helper application of your PC. In most cases, if you double click the zip file, you can get a folder containing Excel files.
+
+4. Move to your data folder and follow the line above of the previous method.
+
+### Use copying and pasting
+
+Since the table structure of Excel is complicated, it may be much easier to copy and paste the range you want to use. In this case keep the record of the data so that the method is reproducible. 
+
+```{r eval=FALSE}
+# Copy the range of an Excel sheet into your clipboard
+wir_F1.0c <- read_delim(clipboard())
+```
+
+
 
 ## Package: `wid` to Download Data {#wir-d-tool}
 
@@ -1334,13 +1427,16 @@ It is similar to `WDI`. For more detail and examples, see [vignettes](https://ds
 
 For indicators of WIR, see [codebook](https://wid.world/codes-dictionary).
 
-### Examples
 
 ```{r}
 library("wid")
 ```
 
+### Examples
+
 #### Evolution of national income over long period
+
+This example is essentially the same as in the vignettes.
 
 * We now plot the evolution of average net national income per adult in Japan, France, Germany, the United Kingdom and the United States.
 
@@ -1376,11 +1472,18 @@ ggplot(data) +
 
 #### `wealg` and `wealp`
 
-* After installing the package, check the [codebook](https://wid.world/codes-dictionary) of the indicators. The following is not the ratio given in F8, but an example. 
+* After installing the package, check the [codebook](https://wid.world/codes-dictionary) of the indicators.
+* The wir indicator is a combination of one alphabet and five alphabets. See the codebook above.
+
+We use the folowing two indicators.
 
 * w	wealth-to-income ratio or labor/capital share	fraction of national income
 * wealg: net public wealth to net national income ratio
 * wealp: net private wealth to net national income ratio
+
+##### Step 1. 
+
+* Importing the data using `download_wid`.
 
 ```{r}
 library(wid)
@@ -1398,10 +1501,19 @@ private <- wwealp %>% select(country, year, private = value)
 private
 ```
 
+##### Step 2.
+
+*Combine two tables. 
+
+
 ```{r}
 public_vs_private <- public %>% left_join(private)
 public_vs_private
 ```
+
+##### Step 3.
+
+* To add country names, use the WDI data.
 
 * We use a package `WDI` to use `WDIcache()` as a reference.
 
@@ -1409,6 +1521,9 @@ public_vs_private
 wdi_cache <- WDI::WDIcache()
 ```
 
+##### Step 4.
+
+* Use `left_join` to add country names
 
 ```{r}
 df_pub_priv <- public_vs_private %>% pivot_longer(cols = c(3,4), names_to = "category", values_to = "value") %>% left_join(wdi_cache$country, by = c("country"="iso2c")) %>%
@@ -1416,10 +1531,25 @@ df_pub_priv <- public_vs_private %>% pivot_longer(cols = c(3,4), names_to = "cat
 df_pub_priv
 ```
 
+* Check if the country name is missing.
+
+```{r} 
+df_pub_priv %>% filter(is.na(country)) %>% 
+  filter(nchar(iso2c)==2) %>%
+  distinct(iso2c) %>% pull(iso2c)
+```
+
+
+#### Step 5.
+
+* Select countries 
+
 ```{r}
 unique(df_pub_priv$country)
 ```
+##### Step 6.
 
+Draw a chart.
 
 ```{r}
 df_pub_priv %>% 
