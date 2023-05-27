@@ -29,7 +29,7 @@ showtext_auto()
 ```
 ## e-Stat 登録と、アプリケーションIDの取得
 
-e-Stat API を利用するには、appID が必要です。
+e-Stat API を利用するには、appId が必要です。
 
 1. e-stat: https://www.e-stat.go.jp/ のページへ行く。
 2. 右上の新規登録から、アカウント登録をします。
@@ -46,7 +46,7 @@ e-Stat API を利用するには、appID が必要です。
 ## 最初の例
 
 ```
-appId <- " " # 私のものは、英数
+appId <- " " # 私のものは、英数40文字
 ```
 
 ```{r include=FALSE}
@@ -60,6 +60,8 @@ appId <- read_lines("./../../../_data/key/estatkey.txt")
 `statsDataId=0003009189`
 
 などの部分があるので、この10桁の番号をコピーして貼り付ける。8桁の「政府統計コード」ではないので、混乱しないこと。
+
+`statsDataId` 取得については、最後の「参考」に少し書いてあります。
 
 ダウンロードしたデータをあとで使うために名前を設定する。
 
@@ -76,9 +78,11 @@ data0m <- estat_getMetaInfo(appId, statsDataId = "1234567890")
 data0m
 ```
 
-### 例1
+### 例1 社会・人口統計体系
 
-```{r}
+[社会・人口統計体系 / 都道府県データ / 基礎データ](https://www.e-stat.go.jp/stat-search/database?page=1&statdisp_id=0000010103)
+
+```{r cache = TRUE}
 df1 <- estat_getStatsData(appId,statsDataId = "0000010103")
 df1
 ```
@@ -86,7 +90,7 @@ df1
 glimpse(df1)
 ```
 
-```{r}
+```{r cache = TRUE}
 df1m <- estat_getMetaInfo(appId, statsDataId = "0000010103")
 glimpse(df1m)
 ```
@@ -94,6 +98,8 @@ glimpse(df1m)
 ```{r}
 df1m$tab
 ```
+
+コード（cat01_code）によって、各データが分類されている。
 
 ```{r}
 df1m$cat01
@@ -133,24 +139,34 @@ df1 %>% filter(cat01_code %in% c('C1101', 'C1102')) %>%
   labs(title = "C1101_県内総生産額（平成17年基準）, C1102_県内総生産額（産業）（平成17年基準）", x = "", y = "", color = "") + scale_x_continuous(breaks = seq(1975,2021,2), labels = paste0(seq(1975,2021,2),"年度"))
 ```
 
-### 例2
+### 例2　年齢別人口
 
 
-```{r}
-estat_getStatsData(
-  appId = appId,
-  statsDataId = "0003448228"
-)
+```{r cache = TRUE}
+df2 <- estat_getStatsData(appId, statsDataId = "0003448228")
+df2
+```
+```{r cache = TRUE}
+df2m <- estat_getMetaInfo(appId, statsDataId = "0003448228")
+glimpse(df2m)
+```
+
+### 人口：就業状態
+
+```{r cache = TRUE}
+df3 <- estat_getStatsData(appId, statsDataId = "0003009189")
+df3
+```
+
+
+```{r cache = TRUE}
+df3m <- estat_getMetaInfo(appId, statsDataId = "0003009189")
+glimpse(df3m)
 ```
 
 ```{r}
-estat_getStatsData(
-  appId = appId,
-  statsDataId = "0003009189"
-)
+df3m$cat02
 ```
-
-
 
 
 # `estatapi`
@@ -659,30 +675,33 @@ mapdata: extra map data for a few regions
 
 ```{r}
 map("china", interior = FALSE)
-map("china", boundary = FALSE, lty = 2, add = TRUE)
+#map("china", boundary = FALSE, lty = 2, add = TRUE)
 ```
 
 ### Examples
 
-```{r}
+```{r cache = TRUE}
 estat_getStatsList(appId = appId, searchWord = "労働力")
 ```
 
 
-```{r}
+```{r cache = TRUE}
 estat_getStatsList(appId = appId, searchWord = "労働力", .use_label = FALSE)
 ```
 
-```{r}
+```{r cache = TRUE}
 estat_getStatsData(appId=appId, statsDataId="0003177000")
 ```
 
-```{r}
+```{r cache = TRUE}
 estat_getMetaInfo(appId = appId, statsDataId = "0003177000")　%>% names()
 ```
 
 
-```{r}
-estat_getStatsData(appId = appId, statsDataId = "00200521")
-```
+# 参考 References
+
+* e-Stat API 機能：https://www.e-stat.go.jp/api/
+  - これをもとに、`estatapi` は作成されている。
+* API 提供データ：https://www.e-stat.go.jp/stat-search/database?page=1
+  - リストの最初にあるものが、8桁の「政府統計コード」です。しかし、これは、データコードではないので、ここから分類の末端に行って、API と表示されたところから、`statsDataId` を得ます。
 
