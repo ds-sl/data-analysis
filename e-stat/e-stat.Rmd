@@ -168,6 +168,60 @@ glimpse(df3m)
 df3m$cat02
 ```
 
+### Population in English
+
+```{r cache = TRUE}
+df3e <- estat_getStatsData(appId, statsDataId = "0003445078", lang = "E")
+df3e
+```
+
+### Data Search
+
+```{r}
+estat_getStatsList(appId = appId, lang = "E",
+                   searchWord = "Population", 
+                   .use_label = FALSE)
+```
+
+```{r}
+estat_getStatsList(appId = appId, lang = "E",
+                   searchWord = "Unemployed", 
+                   .use_label = FALSE)
+```
+
+```{r cache = TRUE}
+df4e <- estat_getStatsData(appId, statsDataId = "0003445099", lang = "E")
+df4e
+```
+
+## Using URL
+
+API URL の構造を理解する。
+
+Rからe-Stat APIを使う: https://qiita.com/nozma/items/f88f5cc60ab63461deae
+
+```{r}
+library(httr)
+# アプリケーション ID を指定します。
+appid <- appId # "あなたのアプリケーション ID"
+
+# 統計表 ID を指定します。
+statsDataId <- "0003445078"
+
+# データを取得します。
+response <- GET(url = "http://api.e-stat.go.jp/rest/3.0/app/getSimpleStatsData",
+                 query = list(appId = appid,
+                              statsDataId = statsDataId,
+                              metaGetFlg = "Y",
+                              cntGetFlg = "N",
+                              explanationGetFlg = "Y",
+                              annotationGetFlg = "Y",
+                              sectionHeaderFlg = "1",
+                              replaceSpChars = "0"))
+glimpse(response)
+```
+
+
 
 # `estatapi`
 
@@ -704,4 +758,6 @@ estat_getMetaInfo(appId = appId, statsDataId = "0003177000")　%>% names()
   - これをもとに、`estatapi` は作成されている。
 * API 提供データ：https://www.e-stat.go.jp/stat-search/database?page=1
   - リストの最初にあるものが、8桁の「政府統計コード」です。しかし、これは、データコードではないので、ここから分類の末端に行って、API と表示されたところから、`statsDataId` を得ます。
+  
+* Rからe-Stat APIを使う: https://qiita.com/nozma/items/f88f5cc60ab63461deae
 
