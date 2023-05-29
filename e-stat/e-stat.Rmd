@@ -27,6 +27,7 @@ library(showtext)
 library(estatapi)
 showtext_auto()
 ```
+
 ## e-Stat 登録と、アプリケーションIDの取得
 
 e-Stat API を利用するには、appId が必要です。
@@ -192,6 +193,23 @@ estat_getStatsList(appId = appId, lang = "E",
 ```{r cache = TRUE}
 df4e <- estat_getStatsData(appId, statsDataId = "0003445099", lang = "E")
 df4e
+```
+
+
+```{r cache = TRUE}
+estat_getStatsList(appId = appId, lang = "J",
+                   searchWord = "全国家計構造調査", 
+                   .use_label = FALSE)
+```
+
+```{r cache = TRUE}
+df5 <- estat_getStatsData(appId, statsDataId = "0003443384", lang = "J")
+df5
+```
+
+```{r cache = TRUE}
+df5m <- estat_getMetaInfo(appId, statsDataId = "0003443384")
+glimpse(df5m)
 ```
 
 ## Using URL
