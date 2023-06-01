@@ -776,6 +776,10 @@ estat_getMetaInfo(appId = appId, statsDataId = "0003177000")　%>% names()
   - これをもとに、`estatapi` は作成されている。
 * API 提供データ：https://www.e-stat.go.jp/stat-search/database?page=1
   - リストの最初にあるものが、8桁の「政府統計コード」です。しかし、これは、データコードではないので、ここから分類の末端に行って、API と表示されたところから、`statsDataId` を得ます。
+* 基礎データについて：https://www.stat.go.jp/data/ssds/1.html
+* 基礎データ：https://www.stat.go.jp/data/ssds/2.html
+  - 基礎データ項目一覧:都道府県別・市区町村別
+  - 社会生活統計指標項目一覧:[都道府県別](https://www.e-stat.go.jp/stat-search/database?page=1&layout=datalist&toukei=00200502&tstat=000001111375&cycle=8&tclass1=000001111378&tclass2val=0)・[市区町村別](https://www.e-stat.go.jp/stat-search/database?page=1&layout=datalist&toukei=00200502&tstat=000001111376&cycle=8&tclass1=000001111381&tclass2val=0)
   
 * Rからe-Stat APIを使う: https://qiita.com/nozma/items/f88f5cc60ab63461deae
 

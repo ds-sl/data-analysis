@@ -23,8 +23,355 @@ R の パッケージ　`openai` で、ChatGPT を使い、R のコードを書�
 
 ```{r}
 library(tidyverse)
+```
+
+
+```{r}
 library(openi)
 library(showtext)
 showtext_auto()
 ```
 
+まず、アカウントと、API-key の取得が必要です。
+
+すでに、アカウントがある場合には、
+
+1. https://platform.openai.com/account/api-keys にアクセス。
+2. OpenAI のアカウントでログイン
+3. API-Keys 作成
+
+# `openai`
+
+* R Package `openai` home: https://CRAN.R-project.org/package=openai
+* Manual: https://cran.r-project.org/web/packages/openai/openai.pdf
+* README: https://cran.r-project.org/web/packages/openai/readme/README.html
+* Overview: {openai} is an R wrapper of OpenAI API endpoints. This package covers Models, Completions, Chat, Edits, Images, Embeddings, Audio, Files, Fine-tunes, Moderations, and legacy Engines endpoints. The latter endpoints, namely Engines, are left for backward compatibility and will be removed soon.
+
+## GitHub README
+
+```{r}
+library(openai)
+```
+
+```{r eval=FALSE}
+create_completion(
+    model = "ada",
+    prompt = "Generate a question and an answer"
+)
+```
+
+```{r eval=FALSE}
+create_image("An astronaut riding a horse in a photorealistic style")
+```
+
+  
+# `chatgpt`
+  
+* R Package `chatgpt` https://CRAN.R-project.org/package=chatgpt
+* Manual: https://cran.r-project.org/web/packages/chatgpt/chatgpt.pdf
+* GitHub Page: https://github.com/jcrodriguez1989/chatgpt
+* Overview: 'OpenAI's 'ChatGPT' <https://chat.openai.com/> coding assistant for 'RStudio'. A set of functions and 'RStudio' addins that aim to help the R developer in tedious coding tasks.
+
+```{r}
+library(chatgpt)
+```
+
+```{r eval=FALSE}
+cat(ask_chatgpt("What do you think about R language?"))
+```
+
+# RTutorial AI
+
+```{r}
+df <- read_csv("./data/df_wdi.csv")
+colnames(df)
+```
+
+
+## Example 1 on 2023.05.29
+
+### Chunk no. 1
+
+> using ggplot2 draw a graph with x = year and world population in y 
+
+```{r}
+# library(ggplot2)
+ggplot(data = df, aes(x = year, y = pop)) +
+  geom_line()
+```
+
+### Chunk no.2
+
+> filter world 1W data, and use ggplot2 draw a graph with x = year and world population in y 
+
+```{r}
+# Filter world 1W data
+df_1W <- df[df$country == "World", ]
+
+# Use ggplot2 to draw a graph
+library(ggplot2)
+ggplot(df_1W, aes(x = year, y = pop)) +
+  geom_line()
+```
+
+### Chunk no.3
+
+> select US, UK, Japan and China data, and use ggplot2 draw a line graph with x = year and the population in y with diferent color in each contry
+
+```{r}
+#install and load ggplot2
+# install.packages("ggplot2")
+# library(ggplot2)
+
+#select US, UK, Japan and China data
+df_select <- df %>%
+  filter(country %in% c("United States", "United Kingdom", "Japan", "China"))
+
+#draw a line graph with x = year and the population in y with diferent color in each contry
+ggplot(df_select, aes(x = year, y = pop, color = country)) +
+  geom_line()
+```
+
+### Chunk no.4
+
+> select US, UK, Japan and China data, and use ggplot2 draw a line graph with x = year and the gdp_percap in y with diferent color in each contry
+
+```{r}
+# Load ggplot2 library
+# library(ggplot2)
+
+# Select US, UK, Japan and China data
+df_select <- df %>% 
+  filter(country %in% c("United States", "United Kingdom", "Japan", "China"))
+
+# Create line graph
+ggplot(df_select, aes(x = year, y = gdpPercap, color = country)) +
+  geom_line()
+```
+
+### Chunk no.5
+
+> US, UK, Japan と China の data を選び, ggplot2 を使って、life_exp のグラフを描いてください。各国は、別の色を使ってください。
+
+```{r}
+#install and load ggplot2
+# install.packages("ggplot2")
+# library(ggplot2)
+
+#subset data frame to include only US, UK, Japan, and China
+df_subset <- df[df$iso2c %in% c("US", "UK", "JP", "CN"),]
+
+#plot life_exp by country
+ggplot(df_subset, aes(x = year, y = lifeExp, color = country)) +
+  geom_line()
+```
+
+### Chunk no.6
+
+### Chunk no.7
+
+> df_subset <- df[df$iso2c %in% c("US", "UK", "JP", "CN"),]
+
+> #plot life_exp by country
+> ggplot(df_subset, aes(x = year, y = life_exp, color = country)) +
+>   geom_line() 
+
+> 上 のコードを初心者にもわかるように説明してください。
+
+Ans. このコードは、dfデータフレームからUS、UK、Japan、Chinaの国のデータのみを抽出し、それらの国のlife_exp（平均寿命）を年ごとにプロットするものです。 dfデータフレームには、数値変数（year、life_exp、pop、gdp_percap）とカテゴリ変数（country、iso2c、iso3c）が含まれています。
+
+### Chunk no.11
+
+> Choose the most recent year, delete the country if the value of life_exp is NA. Take life_exp and divide into IQR and create a colormap of the world. Draw a colored world map using ggplot2.
+
+```{r}
+# Select the most recent year
+most_recent_year <- max(df$year)
+
+# Delete the country if the value of life_exp is NA
+df <- df[!is.na(df$lifeExp),]
+
+# Divide life_exp into IQR
+df$life_exp_iqr <- cut(df$lifeExp, quantile(df$lifeExp, probs = c(0, 0.25, 0.5, 0.75, 1)))
+
+# Create a colormap of the world
+colors <- c("#FF0000", "#FFA500", "#FFFF00", "#008000")
+names(colors) <- levels(df$life_exp_iqr)
+
+# Draw a colored world map using ggplot2
+ggplot(df, aes(fill = life_exp_iqr, map_id = iso3c)) + 
+  geom_map(map = map_data("world"), color = "black") + 
+  scale_fill_manual(values = colors) + 
+  labs(fill = "Life Expectancy") + 
+  theme_void()
+```
+
+### Chunk no.12
+
+> Select data of the most recent year, delete the country if the value of life_exp is NA. Take life_exp and divide into IQR and create a colormap of the world. Draw a colored world map using ggplot2.
+
+```{r}
+# Select data of the most recent year
+df_recent <- df %>% 
+  filter(year == max(year))
+df_recent
+```
+
+
+```{r}
+# Delete the country if the value of life_exp is NA
+df_recent <- df_recent %>% 
+  filter(!is.na(lifeExp))
+
+# Take life_exp and divide into IQR
+df_recent$life_exp_iqr <- cut(df_recent$lifeExp, 
+                              breaks = quantile(df_recent$lifeExp, probs = c(0, 0.25, 0.5, 0.75, 1)), 
+                              labels = c("Q1", "Q2", "Q3", "Q4"))
+
+# Create a colormap of the world
+colors <- c("#FFC0CB", "#FFA500", "#FFD700", "#00FF00")
+colormap <- setNames(colors, c("Q1", "Q2", "Q3", "Q4"))
+
+# Draw a colored world map using ggplot2
+ggplot(data = df_recent, aes(x = long, y = lat, group = group, fill = life_exp_iqr)) +
+  geom_polygon(color = "black", size = 0.2) +
+  scale_fill_manual(values = colormap) +
+  coord_quickmap() +
+  theme_void()
+```
+```{r}
+df_recent <- df %>% 
+  filter(year == 2020)
+# Delete the country if the value of life_exp is NA
+df_recent <- df_recent %>% 
+  filter(!is.na(lifeExp))
+```
+
+
+```{r}
+# Take life_exp and divide into IQR
+df_recent$life_exp_iqr <- cut(df_recent$lifeExp, 
+                              breaks = quantile(df_recent$lifeExp, probs = c(0, 0.25, 0.5, 0.75, 1)), 
+                              labels = c("Q1", "Q2", "Q3", "Q4"))
+```
+
+
+```{r}
+# Create a colormap of the world
+colors <- c("#FFC0CB", "#FFA500", "#FFD700", "#00FF00")
+colormap <- setNames(colors, c("Q1", "Q2", "Q3", "Q4"))
+```
+
+
+```{r}
+# Draw a colored world map using ggplot2
+ggplot(data = df_recent, aes(fill = life_exp_iqr, map_id = iso3c)) + 
+  geom_map(map = map_data("world"), color = "black") + 
+  scale_fill_manual(values = colors) + 
+  labs(fill = "Life Expectancy") + 
+  theme_void()
+```
+
+### Chunk no.12
+
+> Select data of the year 2020, delete the country if the value of life_exp is NA. Take life_exp and divide into IQR and create a colormap of the world. Draw a colored world map using ggplot2.
+
+```{r}
+# Select data of the year 2020
+df_2020 <- df[df$year == 2020, ]
+
+# Delete the country if the value of life_exp is NA
+df_2020 <- df_2020[!is.na(df_2020$life_exp), ]
+
+# Take life_exp and divide into IQR
+iqr <- IQR(df_2020$life_exp)
+
+# Create a colormap of the world
+colormap <- colorRampPalette(c("red", "yellow", "green"))(n = length(iqr))
+
+# Draw a colored world map using ggplot2
+ggplot(data = df_2020, aes(x = iso2c, y = iso3c, fill = life_exp)) +
+  geom_map(map = map_data("world"), color = "black") +
+  scale_fill_gradientn(colours = colormap, limits = iqr)
+```
+
+```{r}
+# Select data of the year 2020
+df_2020 <- df[df$year == 2020, ]
+df_2020
+```
+
+> Select data of the year 2020, delete the country if the value of lifeExp is NA. Take lifeExp and divide into IQR and create a colormap of the world. Draw a colored world map using ggplot2.
+
+```{r}
+library(maps)
+# Select data of the year 2020
+df_2020 <- df[df$year == 2020, ]
+
+# Delete the country if the value of lifeExp is NA
+df_2020 <- df_2020[!is.na(df_2020$lifeExp), ]
+
+# Take lifeExp and divide into IQR
+life_exp_IQR <- IQR(df_2020$lifeExp)
+#df_2020 <- df_2020 %>% mutate(life_exp_IQR = IQR(lifeExp))
+
+# Create a colormap of the world
+colors <- c("#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3")
+
+world <- map_data('world') %>% 
+  mutate(iso3c = iso.alpha(region, n=3)) %>%
+  left_join(df_2020, by = c("iso3c" = "iso3c"))
+
+world %>% 
+  ggplot() +
+  geom_map(aes(long, lat, map_id = region, fill = cut(lifeExp, breaks = life_exp_IQR)), map = world, col = "black", size = 0.1)  + 
+               theme_void()
+```
+cut(x1,quantile(x1),include.lowest=TRUE,labels=FALSE)
+
+
+```{r}
+library(maps)
+# Select data of the year 2020
+df_2020 <- df[df$year == 2020, ]
+
+# Delete the country if the value of lifeExp is NA
+df_2020 <- df_2020[!is.na(df_2020$lifeExp), ]
+
+# Take lifeExp and divide into IQR
+life_exp_IQR <- IQR(df_2020$lifeExp)
+#df_2020 <- df_2020 %>% mutate(life_exp_IQR = IQR(lifeExp))
+
+# Create a colormap of the world
+colors <- c("#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3")
+
+world <- map_data('world') %>% 
+  mutate(iso3c = iso.alpha(region, n=3)) %>%
+  left_join(df_2020, by = c("iso3c" = "iso3c")) %>%
+  mutate(iqr = cut(lifeExp, quantile(df_2020$lifeExp), labels = c("0-25%", "25-50%", "50-75%", "75-100%")))
+
+world %>% 
+  ggplot() +
+  geom_map(aes(long, lat, map_id = region, fill = iqr), map = world, col = "black", size = 0.1)  + 
+               theme_void()
+```
+
+```{r}
+life_exp_IQR
+```
+
+```{r}
+df_2020
+```
+
+```{r}
+world
+```
+
+world0 <- map_data('world') %>% mutate(iso3c = iso.alpha(region, n=3))
+wdi_income <- wdi_cache$country %>% select(iso2c, income)
+world_income <- world0 %>% mutate(iso2c = iso.alpha(region, n=2)) %>%
+  left_join(wdi_income, by = "iso2c") 
+world_income
+
+## 基本事項
