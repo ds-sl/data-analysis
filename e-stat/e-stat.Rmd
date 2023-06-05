@@ -11,6 +11,10 @@ output:
     toc: yes
 ---
 
+# 日本政府統計
+
+基本的なデータベースは、「[社会・人口統計体系](https://www.e-stat.go.jp/stat-search/database?page=1&layout=normal&toukei=00200502)」から見ることができます。一覧表示も可能ですが、まずは、リンクから階層形式で見ると、都道府県別データと、市町村別データに分かれています。また、それぞれが、基礎データと社会統計指標に分かれ、さらに、それぞれが、
+
 # はじめての e-Stat with API
 
 はじめて、R の `etatapi` を使って、e-Stat のデータを取得する方法を簡単に説明します。
@@ -210,6 +214,31 @@ df5
 ```{r cache = TRUE}
 df5m <- estat_getMetaInfo(appId, statsDataId = "0003443384")
 glimpse(df5m)
+```
+
+### 例：出生動向基本調査
+
+出生動向基本調査、
+人口問題基本調査、検索で表示されず。
+
+```{r cache = TRUE}
+estat_getStatsList(appId = appId, lang = "J",
+                   searchWord = "人口動態統計", 
+                   .use_label = FALSE)
+```
+
+```{r cache = TRUE}
+estat_getStatsList(appId = appId, lang = "J",
+                   searchWord = "出生率", 
+                   .use_label = FALSE)
+```
+
+```{r cache = TRUE}
+estat_getStatsList(appId = appId, lang = "J",
+                   searchWord = "出生率", 
+                   .use_label = FALSE) %>%
+  filter(stringr::str_detect(STATISTICS_NAME, "出生")) %>%
+  distinct(STATISTICS_NAME) %>% pull()
 ```
 
 ## Using URL

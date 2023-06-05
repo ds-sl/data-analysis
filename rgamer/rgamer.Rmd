@@ -105,7 +105,7 @@ g2_2_sol <- solve_nfg(game2_2)
 
 ```{r}
 game3_1 <- normal_form(
-  players = c("矢内", "上條"),
+  players = c("上條", "矢内"),
   s1 = c("グー", "チョキ", "パー"),
   s2 = c("グー", "チョキ", "パー"),
   payoffs1 = c(0,0,2,2,0,0,0,2,2),
@@ -180,7 +180,7 @@ g3_2_dominant <- dom(game3_2, type = "dominant")
 
 ```{r}
 game3_1x <- normal_form(
-  players = c("矢内", "上條"),
+  players = c("上條", "矢内"),
   s1 = c("グー", "チョキ", "パー"),
   s2 = c("グー", "チョキ", "パー"),
   payoffs1 = c(0,0,2,2,0,0,0,2,0),
@@ -197,7 +197,7 @@ g3_1x_dominated <- dom(game3_1x)
 g3_1x_dominant <- dom(game3_1x, type = "dominant")
 ```
 
-2. `game3_2` で、大豚がスイッチをオスには、-5 とする。このとき、大豚と、子豚は何を選択するか。
+2. `game3_2` で、大豚がスイッチを押すには、-5 とする。このとき、大豚と、子豚は何を選択するか。
 
 ```{r}
 game3_2x <- normal_form(
@@ -217,6 +217,266 @@ g3_2x_dominated <- dom(game3_2x)
 ```{r}
 g3_2x_dominant <- dom(game3_2x, type = "dominant")
 ```
+# ナッシュ均衡
+
+## 支配関係と最適反応
+
+囚人のジレンマ
+
+```{r}
+game4_1 <- normal_form(
+  players = c("A", "B"),
+  s1 = c("黙秘", "自白"),
+  s2 = c("黙秘", "自白"),
+  payoffs1 = c(-2, -1, -10, -5),
+  payoffs2 = c(-2, -10, -1, -5)
+)
+
+g4_1_sol <- solve_nfg(game4_1, mark_br = TRUE)
+```
+
+```{r}
+g4_1_dominant <- dom(game4_1, type = "dominant")
+```
+合理的な豚の反応の表示
+
+```{r}
+g3_2_sol <- solve_nfg(game3_2, mark_br = TRUE)
+```
+```{r}
+game4_2 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("T", "M", "B"),
+  s2 = c("L", "C", "R"),
+  payoffs1 = c(1,0,0,0,1,0,0,0,1),
+  payoffs2 = c(0,0,1,0,1,0,1,0,0)
+)
+
+g4_2_sol <- solve_nfg(game4_2, mark_br = TRUE)
+```
+
+合理的な豚のシミュレーション
+
+```{r}
+g3_2_sim <- sim_game(game3_2,
+                     n_samples = 100,
+                     n_periods = 8)
+g3_2_sim$plot_mean
+```
+## 練習問題
+
+```
+sim_game(
+  game,
+  n_samples,
+  n_periods,
+  type = "br",
+  init1 = NULL,
+  init2 = NULL,
+  omega = 0,
+  eta = 0.1,
+  lambda = 1,
+  cons1 = NULL,
+  cons2 = NULL,
+  plot_range_y = NULL
+)
+```
+
+
+1. `game4_1` を関数、`sim_game()` でシミュレーションし、ナッシュ均衡に到達できるか確認。
+
+```{r}
+game4_1x <- normal_form(
+  players = c("A", "B"),
+  s1 = c("黙秘", "自白"),
+  s2 = c("黙秘", "自白"),
+  payoffs1 = c(-2, -1, -10, -5),
+  payoffs2 = c(-2, -10, -1, -5)
+)
+
+g4_1x_sol <- solve_nfg(game4_1x, mark_br = TRUE)
+```
+
+```{r}
+g4_1x_dominant <- dom(game4_1x, type = "dominant")
+```
+```{r}
+g4_1x_sim <- sim_game(game4_1x,
+                     n_samples = 100,
+                     n_periods = 8)
+g4_1x_sim$plot_mean
+```
+
+2. `game4_2` を関数、`sim_game()` でシミュレーションし、ナッシュ均衡に到達できるか確認。
+
+```{r}
+game4_2x <- normal_form(
+  players = c("1", "2"),
+  s1 = c("T", "M", "B"),
+  s2 = c("L", "C", "R"),
+  payoffs1 = c(1,0,0,0,1,0,0,0,1),
+  payoffs2 = c(0,0,1,0,1,0,1,0,0)
+)
+
+g4_2x_sol <- solve_nfg(game4_2, mark_br = TRUE)
+```
+```{r}
+g4_2x_sim <- sim_game(game4_2x,
+                     n_samples = 100,
+                     n_periods = 8)
+g4_2x_sim$plot_mean
+```
+
+3. 先ほどと同様に、`game4_2` を関数、`sim_game()` でシミュレートし、ナッシュ均衡に到達するか確認。初期値 init1 = "M", init2 = "C"
+
+```{r}
+g4_2x_sim <- sim_game(game4_2x,
+                     n_samples = 100,
+                     n_periods = 8,
+                     init1 = "M",
+                     init2 = "C")
+g4_2x_sim$plot_mean
+```
+
+## コラム
+
+```{r eval=FALSE}
+p1 <- ggplot(myd) + 
+  geom_point(aes(x = var1, y = var2))
+p2 <- p1 + labs(x = "変数1", y = "変数2")
+plot(p2)
+```
+
+```{r eval=FALSE}
+p <- g1_sol2$br_plot
+p + labs(x = "p1", y = "p2")
+```
+
+# ナッシュ均衡の応用1：協力と調整
+
+## 囚人のジレンマ
+
+```{r}
+game5_1 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("C", "D"),
+  s2 = c("C", "D"),
+  payoffs1 = c(-2, -1, -10, -5) + 10,
+  payoffs2 = c(-2, -10, -1, -5) + 10
+)
+
+g5_1_sol <- solve_nfg(game5_1)
+```
+
+## 共有地の悲劇
+
+```{r}
+game5_2 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("20", "30"),
+  s2 = c("20", "30"),
+  payoffs1 = c(1000, 1200, 800, 900),
+  payoffs2 = c(1000, 800, 1200, 900)
+)
+
+g5_2_sol <- solve_nfg(game5_2)
+```
+
+### ペナルティあり
+
+共有地管理のペナルティ30
+
+```{r}
+game5_3 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("20", "30"),
+  s2 = c("20", "30"),
+  payoffs1 = c(1000, 1200-400, 800, 900-400),
+  payoffs2 = c(1000, 800, 1200-400, 900-400)
+)
+
+g5_3_sol <- solve_nfg(game5_3)
+```
+
+## 調整ゲーム
+
+```{r}
+game5_4 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("参加する", "参加しない"),
+  s2 = c("参加する", "参加しない"),
+  payoffs1 = c(950, 900, 900, 900),
+  payoffs2 = c(950, 900, 900, 900)
+)
+
+g5_4_sol <- solve_nfg(game5_4)
+```
+
+```{r}
+g5_4_sim <- sim_game(game5_4,
+                     n_samples = 100, 
+                     n_periods = 10)
+g5_4_sim$plot_mean
+```
+
+```{r}
+game5_5 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("表", "裏"),
+  s2 = c("表", "裏"),
+  payoffs1 = c(2,0,0,1),
+  payoffs2 = c(2,0,0,1)
+)
+
+g5_5_sol <- solve_nfg(game5_5)
+```
+
+## 鹿狩りゲーム
+
+```{r}
+game5_6 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("鹿", "兎"),
+  s2 = c("鹿", "兎"),
+  payoffs1 = c(3,2,0,2),
+  payoffs2 = c(3,0,2,2)
+)
+
+g5_6_sol <- solve_nfg(game5_6)
+```
+
+### 共有地の自主管理2
+
+```{r}
+game5_7 <- normal_form(
+  players = c("1", "2"),
+  s1 = c("参加する", "参加しない"),
+  s2 = c("参加する", "参加しない"),
+  payoffs1 = c(950, 900, 900-100, 900),
+  payoffs2 = c(950, 900-100, 900, 900)
+)
+
+g5_7_sol <- solve_nfg(game5_7)
+```
+## 練習問題
+
+1. game5_1 では、両プレーヤーの利得に同じ値を足してもナッシュ均衡は、かわらなことを確認した。そでは、プレーヤー１の利得に、10 を、プレーヤー２の利得には、20を足すと、ナッシュ均衡は、変わるだろうか。
+
+```{r}
+game5_1x <- normal_form(
+  players = c("1", "2"),
+  s1 = c("C", "D"),
+  s2 = c("C", "D"),
+  payoffs1 = c(-2, -1, -10, -5) + 10,
+  payoffs2 = c(-2, -10, -1, -5) + 20
+)
+
+g5_1_solx <- solve_nfg(game5_1x)
+```
+
+2. game5_3 のペナルティのある共有地の悲劇ゲームを思い出そう。ペナルティが弱く、ペナルティによる、利得の減少が 100 のとき、過剰放牧を抑制することは可能だろうか。また、ペナルティの値をいろいろと試してみることで、過剰放牧を抑制することができる。もっとも弱いペナルティの値は、いくつか考えてみよう。
+
+3. game5_7 の共有地の自主管理2 のゲームにおける、プレーヤーの選択を関数、sim_game() でシミュレートしてみよう。
 
 # 参考文献
 
