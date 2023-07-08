@@ -1,0 +1,76 @@
+---
+title: "Porit Primers: Shiny"
+output: html_notebook
+---
+
+```{r}
+library(shiny)
+```
+
+```{r}
+runExample("01_hello")
+```
+
+```{r}
+runApp("App-1")
+```
+
+```{r}
+runApp("App-1", display.mode = "showcase")
+```
+
+```{r}
+runExample("01_hello")      # a histogram
+```
+
+# Examples
+
+```{r}
+runExample("02_text")       # tables and data frames
+```
+
+
+```{r}
+runExample("03_reactivity") # a reactive expression
+```
+
+
+```{r}
+runExample("04_mpg")        # global variables
+```
+
+
+```{r}
+runExample("05_sliders")    # slider bars
+```
+
+
+```{r}
+runExample("06_tabsets")    # tabbed panels
+```
+
+
+```{r}
+runExample("07_widgets")    # help text and submit buttons
+```
+
+
+```{r}
+runExample("08_html")       # Shiny app built from HTML
+```
+
+
+```{r}
+runExample("09_upload")     # file upload wizard
+```
+
+
+```{r}
+runExample("10_download")   # file download wizard
+```
+
+
+```{r}
+runExample("11_timer")      # an automated timer
+```
+
