@@ -1,7 +1,10 @@
 ---
 title: "ILO"
 author: "H.Suzuki"
-format: html
+format: 
+  html:
+    code-fold: true
+    code-tools: true
 editor: visual
 ---
 
@@ -114,7 +117,7 @@ df_ilo_wages |> filter(ref_area %in% c("JPN", "GBR", "DEU", "USA", "CHN")) |>
 
 ### Import Data with an Option
 
-type = "both" とすると、指標の内容も書かれていて、get_ilostat_dic() を使わなくて良いが、余分なものが多くて見にくい面もある。 
+type = "both" とすると、指標の内容も書かれていて、get_ilostat_dic() を使わなくて良いが、余分なものが多くて見にくい面もある。
 
 ```{r}
 df_ilo_wages_both <- get_ilostat("EAR_4MTH_SEX_ECO_CUR_NB_A", type = "both", cache = FALSE)
@@ -171,6 +174,7 @@ df_gender_income_gap <- get_ilostat("LAP_2GDP_NOC_RT_A", cache = FALSE) |>
   mutate(time = as.numeric(time))
 df_gender_income_gap
 ```
+
 4つの指標一度に取ることも可能。
 
 ```{r}
@@ -205,6 +209,7 @@ df_income |> filter(ref_area == "JPN", indicator == "SDG_1041_NOC_RT") |>
 df_income |> filter(ref_area == "JPN", indicator == "LAP_2GDP_NOC_RT") |>
   ggplot(aes(time, obs_value)) + geom_line()
 ```
+
 2つの指標とも同じようです。
 
 ```{r}
@@ -212,11 +217,11 @@ df_income |> filter(ref_area == "JPN", indicator != "LAP_2LID_QTL_RT") |>
   ggplot(aes(time, obs_value, col = indicator)) + geom_line()
 ```
 
-
 ```{r}
 df_income |> filter(ref_area == "JPN", indicator == "LAP_2LID_QTL_RT") |>
   ggplot(aes(time, obs_value, col = classif1)) + geom_line()
 ```
+
 ```{r}
 df_income |> filter(ref_area == "JPN", indicator == "LAP_2LID_QTL_RT") |>
   ggplot(aes(time, obs_value, fill = classif1)) + geom_area(col = "black", linewidth = 0.2)

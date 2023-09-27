@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ILO</h1>
+<div class="quarto-title-block"><div><h1 class="title">ILO</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
 </div>
 
 
@@ -126,10 +126,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="例実質賃金ear_4mth_sex_eco_cur_nb_a" class="level2">
 <h2 class="anchored" data-anchor-id="例実質賃金ear_4mth_sex_eco_cur_nb_a">例：実質賃金（EAR_4MTH_SEX_ECO_CUR_NB_A）</h2>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"Rilostat"</span>)　<span class="co"># 最初に一度だけインストール</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.1.3     ✔ readr     2.1.4
@@ -142,11 +148,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rilostat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <p>検索を wage でしてみるがどうも、十分現れない。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'wage'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 16
   id        indicator indicator.label freq  freq.label size  data.start data.end
@@ -160,7 +172,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>earnings で検索すると、現れる。検索の仕方は検討する必要がある。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'earnings'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 13 × 16
    id       indicator indicator.label freq  freq.label size  data.start data.end
@@ -185,7 +200,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>id がわかっていればその一部を入れて検索も可能。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'EAR_4MTH'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 16
   id        indicator indicator.label freq  freq.label size  data.start data.end
@@ -201,13 +219,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>データをダウンロード</p>
 <p>EAR_4MTH_SEX_ECO_CUR_NB_A: Average monthly earnings of employees by sex and economic activity</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"EAR_4MTH_SEX_ECO_CUR_NB_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(df_ilo_wages, <span class="st">"./data/df_ilo_wages.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"./data/df_ilo_wages.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 353008 Columns: 12
 ── Column specification ────────────────────────────────────────────────────────
@@ -222,7 +249,10 @@ dbl  (2): time, obs_value
 <p>見てみる</p>
 <p>ダウンロードしたファイルでは、time は、Chr になっているが、一旦保存し、read_csv で読み込むと、すでに、Dbl になっている。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_ilo_wages</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 353,008 × 12
    ref_area source indicator  sex   classif1 classif2  time obs_value obs_status
@@ -244,8 +274,11 @@ dbl  (2): time, obs_value
 </div>
 <p>それぞれ、どのような値があるか、カテゴリカルな列のみみてみる。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, time <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">|&gt;</span> <span class="fu">lapply</span>(unique)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>$ref_area
 [1] "JPN"
@@ -273,7 +306,10 @@ $classif2
 </div>
 <p>classif1 と classif2 の意味を確認する必要があるので、辞書機能を使って、みてみる。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_dic</span>(<span class="st">"classif1"</span>) <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"ECO"</span>, classif1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 86 × 2
    classif1            classif1.label                                           
@@ -292,7 +328,10 @@ $classif2
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_dic</span>(<span class="st">"classif2"</span>) <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"CUR"</span>, classif2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 2
   classif2     classif2.label          
@@ -304,19 +343,25 @@ $classif2
 </div>
 <p>一応、ECO_AGGREGATE_TOTAL と、CUR_TYPE_PPP を指標にとり、グラフを書いてみる。year が 文字列になっている部分のみ修正。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="sc">|&gt;</span> <span class="fu">filter</span>(classif1 <span class="sc">==</span> <span class="st">"ECO_AGGREGATE_TOTAL"</span>, classif2 <span class="sc">==</span> <span class="st">"CUR_TYPE_PPP"</span>, ref_area <span class="sc">==</span> <span class="st">"JPN"</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time)) <span class="sc">|&gt;</span> </span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">color =</span> sex)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>他の国の状況もみてみる。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"JPN"</span>, <span class="st">"GBR"</span>, <span class="st">"DEU"</span>, <span class="st">"USA"</span>, <span class="st">"CHN"</span>)) <span class="sc">|&gt;</span> </span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sex <span class="sc">==</span> <span class="st">"SEX_T"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(classif1 <span class="sc">==</span> <span class="st">"ECO_AGGREGATE_TOTAL"</span>, classif2 <span class="sc">==</span> <span class="st">"CUR_TYPE_PPP"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time)) <span class="sc">|&gt;</span> </span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">color =</span> ref_area)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -325,8 +370,11 @@ $classif2
 <h3 class="anchored" data-anchor-id="import-data-with-an-option">Import Data with an Option</h3>
 <p>type = “both” とすると、指標の内容も書かれていて、get_ilostat_dic() を使わなくて良いが、余分なものが多くて見にくい面もある。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>df_ilo_wages_both <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"EAR_4MTH_SEX_ECO_CUR_NB_A"</span>, <span class="at">type =</span> <span class="st">"both"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>df_ilo_wages_both</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 353,008 × 22
    ref_area ref_area.label source source.label   indicator indicator.label sex  
@@ -350,7 +398,10 @@ $classif2
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(df_ilo_wages_both)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "ref_area"             "ref_area.label"       "source"              
  [4] "source.label"         "indicator"            "indicator.label"     
@@ -363,7 +414,10 @@ $classif2
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(df_ilo_wages)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "ref_area"       "source"         "indicator"      "sex"           
  [5] "classif1"       "classif2"       "time"           "obs_value"     
@@ -374,7 +428,10 @@ $classif2
 <section id="labor-share-of-income" class="level3">
 <h3 class="anchored" data-anchor-id="labor-share-of-income">labor share of income</h3>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'income'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 16
   id        indicator indicator.label freq  freq.label size  data.start data.end
@@ -389,8 +446,11 @@ $classif2
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>id_income <span class="ot">&lt;-</span> <span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'income'</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(id) <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>id_income</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "SDG_1041_NOC_RT_A" "LAP_2GDP_NOC_RT_A" "LAP_2LID_QTL_RT_A"
 [4] "LAP_2FTM_NOC_RT_A"</code></pre>
@@ -398,9 +458,12 @@ $classif2
 </div>
 <p>SDG_1041_NOC_RT_A: SDG indicator 10.4.1 - Labour income share as a percent of GDP (%)</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>df_sdg_lis <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"SDG_1041_NOC_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>df_sdg_lis</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3,383 × 5
    ref_area source  indicator        time obs_value
@@ -420,9 +483,12 @@ $classif2
 </div>
 <p>LAP_2LID_QTL_RT_A: Labour income share as a percent of GDP – ILO modelled estimates, Nov.&nbsp;2021 (%)</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>df_income_dist <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"LAP_2LID_QTL_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>df_income_dist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 46,070 × 7
    ref_area source  indicator       classif1       time obs_value obs_status
@@ -442,9 +508,12 @@ $classif2
 </div>
 <p>LAP_2LID_QTL_RT_A: Labour income distribution – ILO modelled estimates, Nov.&nbsp;2021 (%)</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>df_labor_income_share <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"LAP_2GDP_NOC_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>df_labor_income_share</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4,607 × 6
    ref_area source  indicator        time obs_value obs_status
@@ -464,9 +533,12 @@ $classif2
 </div>
 <p>LAP_2FTM_NOC_RT_A: Gender income gap, ratio of women’s to men’s labour income – ILO modelled estimates, Nov.&nbsp;202</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>df_gender_income_gap <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"LAP_2GDP_NOC_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>df_gender_income_gap</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4,607 × 6
    ref_area source  indicator        time obs_value obs_status
@@ -486,9 +558,12 @@ $classif2
 </div>
 <p>4つの指標一度に取ることも可能。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="fu">c</span>(<span class="st">"SDG_1041_NOC_RT_A"</span>, <span class="st">"LAP_2GDP_NOC_RT_A"</span>, <span class="st">"LAP_2LID_QTL_RT_A"</span>, <span class="st">"LAP_2FTM_NOC_RT_A"</span>), <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>df_income</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 55,454 × 7
    ref_area source  indicator       classif1  time obs_value obs_status
@@ -507,21 +582,30 @@ $classif2
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>df_income<span class="sc">$</span>indicator <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "SDG_1041_NOC_RT" "LAP_2GDP_NOC_RT" "LAP_2LID_QTL_RT" "LAP_2FTM_NOC_RT"</code></pre>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>id_income</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "SDG_1041_NOC_RT_A" "LAP_2GDP_NOC_RT_A" "LAP_2LID_QTL_RT_A"
 [4] "LAP_2FTM_NOC_RT_A"</code></pre>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, time <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">7</span>) <span class="sc">|&gt;</span></span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(unique)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>$source
 [1] "XA:1843"
@@ -539,7 +623,10 @@ $obs_status
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_dic</span>(<span class="st">"classif1"</span>) <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"QTL_DECILE"</span>, classif1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 10 × 2
    classif1      classif1.label   
@@ -557,48 +644,68 @@ $obs_status
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"SDG_1041_NOC_RT"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2GDP_NOC_RT"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>2つの指標とも同じようです。</p>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">!=</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">col =</span> indicator)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">col =</span> classif1)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">fill =</span> classif1)) <span class="sc">+</span> <span class="fu">geom_area</span>(<span class="at">col =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <div class="cell">
+<details>
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">fill =</span> <span class="fu">fct_rev</span>(classif1))) <span class="sc">+</span> <span class="fu">geom_area</span>(<span class="at">col =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output-display">
 <p><img src="ilo_earnings_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<!-- -->
+
 </section>
 </section>
 
@@ -683,6 +790,57 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
   function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
@@ -836,7 +994,242 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb59" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "ILO"</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "H.Suzuki"</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span><span class="co"> </span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: true</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="an">editor:</span><span class="co"> visual</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## ILOSTAT</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>Website: <span class="ot">&lt;https://ilostat.ilo.org/data/&gt;</span></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>検索をすると、ILOSTAT Explorer が立ち上がります。</span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>例：**Average monthly earnings of employees by sex and economic activity \-- Annual - [ILOSTAT Explorer](https://www.ilo.org/shinyapps/bulkexplorer9/?lang=en&amp;id=EAR_4MTH_SEX_ECO_CUR_NB_A)**</span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span>R パッケージ　Rilostat</span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>CRAN パッケージサイト：<span class="ot">&lt;https://cran.r-project.org/web/packages/Rilostat/index.html&gt;</span></span>
+<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a><span class="ss">        -   </span>Rilostat: ILO Open Data via Ilostat Bulk Download Facility or SDMX Web Service</span>
+<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a><span class="ss">        -   </span>マニュアル <span class="co">[</span><span class="ot">Manual</span><span class="co">](https://cran.r-project.org/web/packages/Rilostat/Rilostat.pdf)</span></span>
+<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a><span class="ss">    -   </span>活用例 Vignettes: <span class="ot">&lt;https://ilostat.github.io/Rilostat/articles/Rilostat.html&gt;</span></span>
+<span id="cb59-28"><a href="#cb59-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-29"><a href="#cb59-29" aria-hidden="true" tabindex="-1"></a><span class="ss">        -   </span>基本的な機能 Essential Functionality</span>
+<span id="cb59-30"><a href="#cb59-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-31"><a href="#cb59-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## 例：実質賃金（EAR_4MTH_SEX_ECO_CUR_NB_A）</span></span>
+<span id="cb59-32"><a href="#cb59-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-33"><a href="#cb59-33" aria-hidden="true" tabindex="-1"></a><span class="in">```{r eval = FALSE}</span></span>
+<span id="cb59-34"><a href="#cb59-34" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"Rilostat"</span>)　<span class="co"># 最初に一度だけインストール</span></span>
+<span id="cb59-35"><a href="#cb59-35" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-36"><a href="#cb59-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-39"><a href="#cb59-39" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-40"><a href="#cb59-40" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb59-41"><a href="#cb59-41" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Rilostat)</span>
+<span id="cb59-42"><a href="#cb59-42" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-43"><a href="#cb59-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-44"><a href="#cb59-44" aria-hidden="true" tabindex="-1"></a>検索を wage でしてみるがどうも、十分現れない。</span>
+<span id="cb59-45"><a href="#cb59-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-48"><a href="#cb59-48" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-49"><a href="#cb59-49" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'wage'</span>)</span>
+<span id="cb59-50"><a href="#cb59-50" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-51"><a href="#cb59-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-52"><a href="#cb59-52" aria-hidden="true" tabindex="-1"></a>earnings で検索すると、現れる。検索の仕方は検討する必要がある。</span>
+<span id="cb59-53"><a href="#cb59-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-56"><a href="#cb59-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-57"><a href="#cb59-57" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'earnings'</span>)</span>
+<span id="cb59-58"><a href="#cb59-58" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-59"><a href="#cb59-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-60"><a href="#cb59-60" aria-hidden="true" tabindex="-1"></a>id がわかっていればその一部を入れて検索も可能。</span>
+<span id="cb59-61"><a href="#cb59-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-64"><a href="#cb59-64" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-65"><a href="#cb59-65" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'EAR_4MTH'</span>)</span>
+<span id="cb59-66"><a href="#cb59-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-67"><a href="#cb59-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-68"><a href="#cb59-68" aria-hidden="true" tabindex="-1"></a>データをダウンロード</span>
+<span id="cb59-69"><a href="#cb59-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-70"><a href="#cb59-70" aria-hidden="true" tabindex="-1"></a>EAR_4MTH_SEX_ECO_CUR_NB_A: Average monthly earnings of employees by sex and economic activity</span>
+<span id="cb59-71"><a href="#cb59-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-74"><a href="#cb59-74" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-75"><a href="#cb59-75" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"EAR_4MTH_SEX_ECO_CUR_NB_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb59-76"><a href="#cb59-76" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-77"><a href="#cb59-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-80"><a href="#cb59-80" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-81"><a href="#cb59-81" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(df_ilo_wages, <span class="st">"./data/df_ilo_wages.csv"</span>)</span>
+<span id="cb59-82"><a href="#cb59-82" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-83"><a href="#cb59-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-86"><a href="#cb59-86" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-87"><a href="#cb59-87" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"./data/df_ilo_wages.csv"</span>)</span>
+<span id="cb59-88"><a href="#cb59-88" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-89"><a href="#cb59-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-90"><a href="#cb59-90" aria-hidden="true" tabindex="-1"></a>見てみる</span>
+<span id="cb59-91"><a href="#cb59-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-92"><a href="#cb59-92" aria-hidden="true" tabindex="-1"></a>ダウンロードしたファイルでは、time は、Chr になっているが、一旦保存し、read_csv で読み込むと、すでに、Dbl になっている。</span>
+<span id="cb59-93"><a href="#cb59-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-96"><a href="#cb59-96" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-97"><a href="#cb59-97" aria-hidden="true" tabindex="-1"></a>df_ilo_wages</span>
+<span id="cb59-98"><a href="#cb59-98" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-99"><a href="#cb59-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-100"><a href="#cb59-100" aria-hidden="true" tabindex="-1"></a>それぞれ、どのような値があるか、カテゴリカルな列のみみてみる。</span>
+<span id="cb59-101"><a href="#cb59-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-104"><a href="#cb59-104" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-105"><a href="#cb59-105" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, time <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-106"><a href="#cb59-106" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>) <span class="sc">|&gt;</span> <span class="fu">lapply</span>(unique)</span>
+<span id="cb59-107"><a href="#cb59-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-108"><a href="#cb59-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-109"><a href="#cb59-109" aria-hidden="true" tabindex="-1"></a>classif1 と classif2 の意味を確認する必要があるので、辞書機能を使って、みてみる。</span>
+<span id="cb59-110"><a href="#cb59-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-113"><a href="#cb59-113" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-114"><a href="#cb59-114" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_dic</span>(<span class="st">"classif1"</span>) <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"ECO"</span>, classif1))</span>
+<span id="cb59-115"><a href="#cb59-115" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-116"><a href="#cb59-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-119"><a href="#cb59-119" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-120"><a href="#cb59-120" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_dic</span>(<span class="st">"classif2"</span>) <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"CUR"</span>, classif2))</span>
+<span id="cb59-121"><a href="#cb59-121" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-122"><a href="#cb59-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-123"><a href="#cb59-123" aria-hidden="true" tabindex="-1"></a>一応、ECO_AGGREGATE_TOTAL と、CUR_TYPE_PPP を指標にとり、グラフを書いてみる。year が 文字列になっている部分のみ修正。</span>
+<span id="cb59-124"><a href="#cb59-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-127"><a href="#cb59-127" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-128"><a href="#cb59-128" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="sc">|&gt;</span> <span class="fu">filter</span>(classif1 <span class="sc">==</span> <span class="st">"ECO_AGGREGATE_TOTAL"</span>, classif2 <span class="sc">==</span> <span class="st">"CUR_TYPE_PPP"</span>, ref_area <span class="sc">==</span> <span class="st">"JPN"</span>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time)) <span class="sc">|&gt;</span> </span>
+<span id="cb59-129"><a href="#cb59-129" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">color =</span> sex)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb59-130"><a href="#cb59-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-131"><a href="#cb59-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-132"><a href="#cb59-132" aria-hidden="true" tabindex="-1"></a>他の国の状況もみてみる。</span>
+<span id="cb59-133"><a href="#cb59-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-136"><a href="#cb59-136" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-137"><a href="#cb59-137" aria-hidden="true" tabindex="-1"></a>df_ilo_wages <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"JPN"</span>, <span class="st">"GBR"</span>, <span class="st">"DEU"</span>, <span class="st">"USA"</span>, <span class="st">"CHN"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb59-138"><a href="#cb59-138" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sex <span class="sc">==</span> <span class="st">"SEX_T"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-139"><a href="#cb59-139" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(classif1 <span class="sc">==</span> <span class="st">"ECO_AGGREGATE_TOTAL"</span>, classif2 <span class="sc">==</span> <span class="st">"CUR_TYPE_PPP"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-140"><a href="#cb59-140" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time)) <span class="sc">|&gt;</span> </span>
+<span id="cb59-141"><a href="#cb59-141" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">color =</span> ref_area)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb59-142"><a href="#cb59-142" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-143"><a href="#cb59-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-144"><a href="#cb59-144" aria-hidden="true" tabindex="-1"></a><span class="fu">### Import Data with an Option</span></span>
+<span id="cb59-145"><a href="#cb59-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-146"><a href="#cb59-146" aria-hidden="true" tabindex="-1"></a>type = "both" とすると、指標の内容も書かれていて、get_ilostat_dic() を使わなくて良いが、余分なものが多くて見にくい面もある。</span>
+<span id="cb59-147"><a href="#cb59-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-150"><a href="#cb59-150" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-151"><a href="#cb59-151" aria-hidden="true" tabindex="-1"></a>df_ilo_wages_both <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"EAR_4MTH_SEX_ECO_CUR_NB_A"</span>, <span class="at">type =</span> <span class="st">"both"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb59-152"><a href="#cb59-152" aria-hidden="true" tabindex="-1"></a>df_ilo_wages_both</span>
+<span id="cb59-153"><a href="#cb59-153" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-154"><a href="#cb59-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-157"><a href="#cb59-157" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-158"><a href="#cb59-158" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(df_ilo_wages_both)</span>
+<span id="cb59-159"><a href="#cb59-159" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-160"><a href="#cb59-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-163"><a href="#cb59-163" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-164"><a href="#cb59-164" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(df_ilo_wages)</span>
+<span id="cb59-165"><a href="#cb59-165" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-166"><a href="#cb59-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-167"><a href="#cb59-167" aria-hidden="true" tabindex="-1"></a><span class="fu">### labor share of income</span></span>
+<span id="cb59-168"><a href="#cb59-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-171"><a href="#cb59-171" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-172"><a href="#cb59-172" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'income'</span>)</span>
+<span id="cb59-173"><a href="#cb59-173" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-174"><a href="#cb59-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-177"><a href="#cb59-177" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-178"><a href="#cb59-178" aria-hidden="true" tabindex="-1"></a>id_income <span class="ot">&lt;-</span> <span class="fu">get_ilostat_toc</span>(<span class="at">search =</span> <span class="st">'income'</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(id) <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span>
+<span id="cb59-179"><a href="#cb59-179" aria-hidden="true" tabindex="-1"></a>id_income</span>
+<span id="cb59-180"><a href="#cb59-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-181"><a href="#cb59-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-182"><a href="#cb59-182" aria-hidden="true" tabindex="-1"></a>SDG_1041_NOC_RT_A: SDG indicator 10.4.1 - Labour income share as a percent of GDP (%)</span>
+<span id="cb59-183"><a href="#cb59-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-186"><a href="#cb59-186" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-187"><a href="#cb59-187" aria-hidden="true" tabindex="-1"></a>df_sdg_lis <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"SDG_1041_NOC_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-188"><a href="#cb59-188" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
+<span id="cb59-189"><a href="#cb59-189" aria-hidden="true" tabindex="-1"></a>df_sdg_lis</span>
+<span id="cb59-190"><a href="#cb59-190" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-191"><a href="#cb59-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-192"><a href="#cb59-192" aria-hidden="true" tabindex="-1"></a>LAP_2LID_QTL_RT_A: Labour income share as a percent of GDP -- ILO modelled estimates, Nov. 2021 (%)</span>
+<span id="cb59-193"><a href="#cb59-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-196"><a href="#cb59-196" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-197"><a href="#cb59-197" aria-hidden="true" tabindex="-1"></a>df_income_dist <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"LAP_2LID_QTL_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-198"><a href="#cb59-198" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
+<span id="cb59-199"><a href="#cb59-199" aria-hidden="true" tabindex="-1"></a>df_income_dist</span>
+<span id="cb59-200"><a href="#cb59-200" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-201"><a href="#cb59-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-202"><a href="#cb59-202" aria-hidden="true" tabindex="-1"></a>LAP_2LID_QTL_RT_A: Labour income distribution -- ILO modelled estimates, Nov. 2021 (%)</span>
+<span id="cb59-203"><a href="#cb59-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-206"><a href="#cb59-206" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-207"><a href="#cb59-207" aria-hidden="true" tabindex="-1"></a>df_labor_income_share <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"LAP_2GDP_NOC_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-208"><a href="#cb59-208" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
+<span id="cb59-209"><a href="#cb59-209" aria-hidden="true" tabindex="-1"></a>df_labor_income_share</span>
+<span id="cb59-210"><a href="#cb59-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-211"><a href="#cb59-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-212"><a href="#cb59-212" aria-hidden="true" tabindex="-1"></a>LAP_2FTM_NOC_RT_A: Gender income gap, ratio of women's to men's labour income -- ILO modelled estimates, Nov. 202</span>
+<span id="cb59-213"><a href="#cb59-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-216"><a href="#cb59-216" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-217"><a href="#cb59-217" aria-hidden="true" tabindex="-1"></a>df_gender_income_gap <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="st">"LAP_2GDP_NOC_RT_A"</span>, <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-218"><a href="#cb59-218" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
+<span id="cb59-219"><a href="#cb59-219" aria-hidden="true" tabindex="-1"></a>df_gender_income_gap</span>
+<span id="cb59-220"><a href="#cb59-220" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-221"><a href="#cb59-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-222"><a href="#cb59-222" aria-hidden="true" tabindex="-1"></a>4つの指標一度に取ることも可能。</span>
+<span id="cb59-223"><a href="#cb59-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-226"><a href="#cb59-226" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-227"><a href="#cb59-227" aria-hidden="true" tabindex="-1"></a>df_income <span class="ot">&lt;-</span> <span class="fu">get_ilostat</span>(<span class="fu">c</span>(<span class="st">"SDG_1041_NOC_RT_A"</span>, <span class="st">"LAP_2GDP_NOC_RT_A"</span>, <span class="st">"LAP_2LID_QTL_RT_A"</span>, <span class="st">"LAP_2FTM_NOC_RT_A"</span>), <span class="at">cache =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb59-228"><a href="#cb59-228" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> <span class="fu">as.numeric</span>(time))</span>
+<span id="cb59-229"><a href="#cb59-229" aria-hidden="true" tabindex="-1"></a>df_income</span>
+<span id="cb59-230"><a href="#cb59-230" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-231"><a href="#cb59-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-234"><a href="#cb59-234" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-235"><a href="#cb59-235" aria-hidden="true" tabindex="-1"></a>df_income<span class="sc">$</span>indicator <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span>
+<span id="cb59-236"><a href="#cb59-236" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-237"><a href="#cb59-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-240"><a href="#cb59-240" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-241"><a href="#cb59-241" aria-hidden="true" tabindex="-1"></a>id_income</span>
+<span id="cb59-242"><a href="#cb59-242" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-243"><a href="#cb59-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-246"><a href="#cb59-246" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-247"><a href="#cb59-247" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, time <span class="sc">==</span> <span class="dv">2020</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">7</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-248"><a href="#cb59-248" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(unique)</span>
+<span id="cb59-249"><a href="#cb59-249" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-250"><a href="#cb59-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-253"><a href="#cb59-253" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-254"><a href="#cb59-254" aria-hidden="true" tabindex="-1"></a><span class="fu">get_ilostat_dic</span>(<span class="st">"classif1"</span>) <span class="sc">|&gt;</span> <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"QTL_DECILE"</span>, classif1))</span>
+<span id="cb59-255"><a href="#cb59-255" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-256"><a href="#cb59-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-259"><a href="#cb59-259" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-260"><a href="#cb59-260" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"SDG_1041_NOC_RT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-261"><a href="#cb59-261" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb59-262"><a href="#cb59-262" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-263"><a href="#cb59-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-266"><a href="#cb59-266" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-267"><a href="#cb59-267" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2GDP_NOC_RT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-268"><a href="#cb59-268" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb59-269"><a href="#cb59-269" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-270"><a href="#cb59-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-271"><a href="#cb59-271" aria-hidden="true" tabindex="-1"></a>2つの指標とも同じようです。</span>
+<span id="cb59-272"><a href="#cb59-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-275"><a href="#cb59-275" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-276"><a href="#cb59-276" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">!=</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-277"><a href="#cb59-277" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">col =</span> indicator)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb59-278"><a href="#cb59-278" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-279"><a href="#cb59-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-282"><a href="#cb59-282" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-283"><a href="#cb59-283" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-284"><a href="#cb59-284" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">col =</span> classif1)) <span class="sc">+</span> <span class="fu">geom_line</span>()</span>
+<span id="cb59-285"><a href="#cb59-285" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-286"><a href="#cb59-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-289"><a href="#cb59-289" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-290"><a href="#cb59-290" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-291"><a href="#cb59-291" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">fill =</span> classif1)) <span class="sc">+</span> <span class="fu">geom_area</span>(<span class="at">col =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>)</span>
+<span id="cb59-292"><a href="#cb59-292" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb59-293"><a href="#cb59-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-296"><a href="#cb59-296" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb59-297"><a href="#cb59-297" aria-hidden="true" tabindex="-1"></a>df_income <span class="sc">|&gt;</span> <span class="fu">filter</span>(ref_area <span class="sc">==</span> <span class="st">"JPN"</span>, indicator <span class="sc">==</span> <span class="st">"LAP_2LID_QTL_RT"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-298"><a href="#cb59-298" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(time, obs_value, <span class="at">fill =</span> <span class="fu">fct_rev</span>(classif1))) <span class="sc">+</span> <span class="fu">geom_area</span>(<span class="at">col =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>)</span>
+<span id="cb59-299"><a href="#cb59-299" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
 
 
