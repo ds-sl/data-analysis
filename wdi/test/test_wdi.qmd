@@ -1,0 +1,34 @@
+---
+title: "test_html"
+author: "H. Suzuki"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+https://databank.worldbank.org/Line-graph-of-GDP-of-top-10-countries/id/ff8c5a74
+
+<iframe frameBorder='no' src="https://databank.worldbank.org/embed/Line-graph-of-GDP-of-top-10-countries/id/ff8c5a74?ti=y&ds=n&dd=y&tb=y&sh=y&dw=y&pr=y&inf=y&zm=y&md=y&navigator=n&theme=darkGrey&bdrClr=rgb(68,68,68)&bdrStyle=solid&bdrWidth=0px&title=Arial;14px;true;false;rgb(68,68,68);justify&exptypes=Excel,CSV,TabbedTxt" width= "500"  height="425"></iframe>
+
+
+<iframe src="https://data.worldbank.org/share/widget?end=2021&amp;indicators=NY.GDP.PCAP.KD&amp;locations=JP-GB-RU-FR-CN-US-UA-DE&amp;start=2021&amp;view=bar" width="450" height="300" frameBorder="0" scrolling="no">
